@@ -33,13 +33,10 @@ const CandidateGridView: React.FC<CandidateGridViewProps> = ({ onBack, categoryI
           
           <h1 className="text-3xl md:text-4xl font-black mb-4 tracking-tight">
             <span className="text-white">
-              {language === 'EN' ? selectedCategory?.titleEn : selectedCategory?.titleTr} 候補者一覧 - 
+              {language === 'EN' ? selectedCategory?.titleEn : selectedCategory?.titleTr} 
             </span>
             <span className="text-white ml-2">{t.listTitle}</span>
           </h1>
-          <p className="text-blue-200 text-xs md:text-sm font-medium opacity-80 mb-2">
-            日本語・特定技能資格持ち、応募可能の候補者一覧
-          </p>
           <p className="text-blue-300 text-xs md:text-sm font-medium opacity-80">
             {t.listSub1}
           </p>
