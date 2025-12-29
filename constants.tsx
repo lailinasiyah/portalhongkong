@@ -120,14 +120,14 @@ export const CATEGORIES: CategoryItem[] = [
   {
     id: 'Housekeeper',
     titleEn: 'House Keeper',
-    titleTr: 'Kat Görevlisi',
+    titleTr: 'Garsonlar',
     imageUrl: 'https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?q=80&w=500&auto=format&fit=crop',
     link: '#'
   },
   {
     id: 'Waiters',
     titleEn: 'Waiters',
-    titleTr: 'Servis Görevlisi',
+    titleTr: 'Garsonlar',
     imageUrl: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=500&auto=format&fit=crop',
     link: '#'
   },
