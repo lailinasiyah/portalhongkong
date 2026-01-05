@@ -19,11 +19,12 @@ export const UI_TRANSLATIONS = {
     contactLabel: "Contact",
     learnMore: "Learn More",
     orgSub: "Hospitality and SPA Candidate's Portal",
-    chartTitle: "Candidate Growth",                                                                                                                                                 
+    chartTitle: "Candidate Growth",
     chartSub: "Total candidate pool growth from year to year",
     candidateUnit: "Candidates",
     backToHome: "Back to Home",
-    listTitle: "List of House Keeper Candidates",
+    listTitle: "List of Caregiver Candidates",
+    listSub1: "List of candidates who have Japanese language and specific skills qualifications and are eligible to apply",
     listSub2: "List of available candidates with ready JFT & SSW certificates",
     resumeLabel: "Candidate's resume",
     videoLabel: "Candidate self-introduction video",
@@ -50,11 +51,12 @@ export const UI_TRANSLATIONS = {
     waAlivia: "Ibu Alivia",
     waMessageTemplate: "Halo Bapak/Ibu, saya ingin berkenaan untuk kandidat {name} apakah bisa dijadwalkan wawancara?",
     // UI specific labels from screenshots
-    jpResume: "Curriculum Vitae",
-    jpVideo: "Video Profile Candidat",
-    jpCardResume: "CV",
-    jpCardVideo: "Video",
-    spreadsheetTitle: "LPK MSS List Of Available Candidates"
+    jpResume: "候補者の履歴書",
+    jpVideo: "候補者の自己紹介動画",
+    jpCardResume: "履歴書",
+    jpCardVideo: "動画",
+    spreadsheetTitle: "LPK MSS 特定技能 候補者リスト",
+    availableFor: "Available candidates for {category}"
   },
   TR: {
     welcome: "Hoş Geldiniz",
@@ -78,6 +80,7 @@ export const UI_TRANSLATIONS = {
     candidateUnit: "Adaylar",
     backToHome: "Ana Sayfaya Dön",
     listTitle: "Bakıcı Aday Listesi",
+    listSub1: "Japonca dil ve özel beceri yeterliliklerine sahip ve başvuru yapmaya uygun adayların listesi",
     listSub2: "Hazır JFT ve SSW sertifikalarına sahip mevcut adayların listesi",
     resumeLabel: "Adayın özgeçmişi",
     videoLabel: "Adayın kendini tanıtma videosu",
@@ -103,10 +106,11 @@ export const UI_TRANSLATIONS = {
     waRani: "Bayan Rani",
     waAlivia: "Bayan Alivia",
     waMessageTemplate: "Merhaba Hanımefendi/Beyefendi, {name} isimli aday için bir görüşme ayarlamak istiyorum.",
-    jpResume: "CV aday",
-    jpVideo: "Tanıtım videosu",
-    jpCardResume: "CV aday",
-    jpCardVideo: "Tanıtım videosu",
-    spreadsheetTitle: "LPK MSS Uygun Adaylar Listesi"
+    jpResume: "候補者の履歴書",
+    jpVideo: "候補者の自己紹介動画",
+    jpCardResume: "履歴書",
+    jpCardVideo: "動画",
+    spreadsheetTitle: "LPK MSS 特定技能 候補者リスト",
+    availableFor: "{category} için uygun adaylar"
   }
 };

@@ -74,7 +74,9 @@ const CategorySection: React.FC<CategorySectionProps> = ({ onViewGrid, onViewSpr
                 </div>
               </div>
               <div className="p-6 flex flex-col md:flex-row items-center justify-between gap-4">
-                <p className="text-gray-500 text-sm font-medium italic">Available candidates for {item.titleEn}</p>
+                <p className="text-gray-500 text-sm font-medium italic">
+                  {t.availableFor.replace('{category}', language === 'EN' ? item.titleEn : item.titleTr)}
+                </p>
                 <PortalButton 
                   onClick={() => onViewGrid(item.id)}
                   variant="blue" 
