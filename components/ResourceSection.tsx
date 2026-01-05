@@ -59,7 +59,7 @@ const ResourceSection: React.FC = () => {
           <div className="text-center">
             <span className="inline-flex items-center text-[10px] md:text-xs font-bold uppercase tracking-widest text-gray-400">
               <span className="w-3 h-3 bg-red-600 rounded-sm mr-2"></span>
-              Annual Candidate Pool
+              {t.annualPoolLabel}
             </span>
           </div>
         </div>

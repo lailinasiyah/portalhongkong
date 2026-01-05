@@ -56,7 +56,8 @@ export const UI_TRANSLATIONS = {
     jpCardResume: "履歴書",
     jpCardVideo: "動画",
     spreadsheetTitle: "LPK MSS 特定技能 候補者リスト",
-    availableFor: "Available candidates for {category}"
+    availableFor: "Available candidates for {category}",
+    annualPoolLabel: "Annual Candidate Pool"
   },
   TR: {
     welcome: "Hoş Geldiniz",
@@ -111,6 +112,7 @@ export const UI_TRANSLATIONS = {
     jpCardResume: "履歴書",
     jpCardVideo: "動画",
     spreadsheetTitle: "LPK MSS 特定技能 候補者リスト",
-    availableFor: "{category} için uygun adaylar"
+    availableFor: "{category} için uygun adaylar",
+    annualPoolLabel: "Yıllık Aday Havuzu"
   }
 };
