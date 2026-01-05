@@ -10,7 +10,7 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
   // Form State
   const [formData, setFormData] = useState<Omit<Candidate, 'id'>>({
-    categoryId: 'housekeeper',
+    categoryId: 'caregiving',
     code: '',
     nameEn: '',
     nameLocal: '',
@@ -30,11 +30,19 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Ensure nameLocal is at least set to nameEn if it was empty, 
+    // since we removed the manual input but the UI still displays it.
+    const finalData = {
+      ...formData,
+      nameLocal: formData.nameLocal || formData.nameEn
+    };
+
     if (editingId) {
-      updateCandidate(editingId, formData);
+      updateCandidate(editingId, finalData);
       setEditingId(null);
     } else {
-      addCandidate(formData);
+      addCandidate(finalData);
       setIsAdding(false);
     }
   };
@@ -49,7 +57,23 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
           <h1 className="text-xl font-black uppercase tracking-widest text-blue-900">Admin Dashboard</h1>
         </div>
         <button 
-          onClick={() => { setIsAdding(true); setEditingId(null); }}
+          onClick={() => { 
+            setIsAdding(true); 
+            setEditingId(null);
+            setFormData({
+              categoryId: categories[0]?.id || 'caregiving',
+              code: '',
+              nameEn: '',
+              nameLocal: '',
+              photoUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400&h=500&fit=crop',
+              resumeUrl: '',
+              videoUrl: '',
+              sex: 'Female',
+              age: 20,
+              passportStatus: 'Ready',
+              cvAvailable: true
+            });
+          }}
           className="bg-red-600 text-white px-4 py-2 rounded font-bold text-xs uppercase tracking-widest hover:bg-red-700 transition-colors"
         >
           Add New Candidate
@@ -117,10 +141,6 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                   <input type="text" value={formData.code} onChange={e => setFormData({...formData, code: e.target.value})} className="w-full p-2 border border-gray-200 rounded text-sm" placeholder="JM-2405037" required />
                 </div>
                 <div className="col-span-2 md:col-span-1">
-                  <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Local Name / Furigana</label>
-                  <input type="text" value={formData.nameLocal} onChange={e => setFormData({...formData, nameLocal: e.target.value})} className="w-full p-2 border border-gray-200 rounded text-sm" />
-                </div>
-                <div className="col-span-2 md:col-span-1">
                   <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Sheet / Category</label>
                   <select value={formData.categoryId} onChange={e => setFormData({...formData, categoryId: e.target.value})} className="w-full p-2 border border-gray-200 rounded text-sm">
                     {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.titleEn}</option>)}
@@ -128,13 +148,20 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 </div>
                 <div className="col-span-2 md:col-span-1">
                   <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Age</label>
-                  <input type="number" value={formData.age} onChange={e => setFormData({...formData, age: parseInt(e.target.value)})} className="w-full p-2 border border-gray-200 rounded text-sm" />
+                  <input type="number" value={formData.age} onChange={e => setFormData({...formData, age: parseInt(e.target.value) || 0})} className="w-full p-2 border border-gray-200 rounded text-sm" />
                 </div>
                 <div className="col-span-2 md:col-span-1">
                   <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Sex</label>
                   <select value={formData.sex} onChange={e => setFormData({...formData, sex: e.target.value as 'Male' | 'Female'})} className="w-full p-2 border border-gray-200 rounded text-sm">
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
+                  </select>
+                </div>
+                <div className="col-span-2 md:col-span-1">
+                  <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Passport Status</label>
+                  <select value={formData.passportStatus} onChange={e => setFormData({...formData, passportStatus: e.target.value})} className="w-full p-2 border border-gray-200 rounded text-sm">
+                    <option value="Ready">Ready</option>
+                    <option value="In Process">In Process</option>
                   </select>
                 </div>
                 <div className="col-span-2">

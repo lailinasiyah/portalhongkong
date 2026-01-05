@@ -16,7 +16,7 @@ const Navbar: React.FC<NavbarProps> = ({ onAdminClick }) => {
       <div className="flex items-center space-x-3">
         <div className="bg-white p-1 rounded-full shadow-lg border-2 border-red-600 overflow-hidden w-16 h-16 md:w-24 md:h-24 flex items-center justify-center">
            <img 
-            src="https://portal.lpkmss.com/wp-content/uploads/2023/12/LOGO-LPK-MSS-BULAT-300x300.png" 
+            src="assets/lpk.png" 
             alt="LPK MSS Logo" 
             className="w-full h-full object-contain"
           />
@@ -24,21 +24,29 @@ const Navbar: React.FC<NavbarProps> = ({ onAdminClick }) => {
       </div>
       
       <div className="flex items-center space-x-4">
-        {/* Language Switcher */}
-        <div className="bg-white/90 backdrop-blur-sm p-1.5 rounded-full shadow-md flex space-x-1 border border-red-100">
+        {/* Language Switcher with Flag Images */}
+        <div className="bg-white/90 backdrop-blur-sm p-1.5 rounded-full shadow-md flex space-x-2 border border-red-100">
           <button 
             onClick={() => setLanguage('EN')}
-            className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${language === 'EN' ? 'bg-red-600 text-white scale-110 shadow-sm' : 'hover:bg-gray-100 text-gray-600'}`}
+            className={`w-8 h-8 rounded-full overflow-hidden border-2 transition-all active:scale-95 ${language === 'EN' ? 'border-red-600 scale-110 shadow-sm' : 'border-transparent opacity-50 hover:opacity-100'}`}
             title="English"
           >
-            🇬🇧
+            <img 
+              src="https://flagcdn.com/w40/gb.png" 
+              alt="English Flag" 
+              className="w-full h-full object-cover"
+            />
           </button>
           <button 
             onClick={() => setLanguage('TR')}
-            className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${language === 'TR' ? 'bg-red-600 text-white scale-110 shadow-sm' : 'hover:bg-gray-100 text-gray-600'}`}
+            className={`w-8 h-8 rounded-full overflow-hidden border-2 transition-all active:scale-95 ${language === 'TR' ? 'border-red-600 scale-110 shadow-sm' : 'border-transparent opacity-50 hover:opacity-100'}`}
             title="Turkish"
           >
-            🇹🇷
+            <img 
+              src="https://flagcdn.com/w40/tr.png" 
+              alt="Turkish Flag" 
+              className="w-full h-full object-cover"
+            />
           </button>
         </div>
 

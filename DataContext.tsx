@@ -7,7 +7,7 @@ interface DataContextType {
   candidates: Candidate[];
   categories: CategoryItem[];
   addCandidate: (c: Omit<Candidate, 'id'>) => Promise<void>;
-  updateCandidate: (id: string, c: Partial<Candidate>) => Promise<void>;
+  updateCandidate: (id: string, updates: Partial<Candidate>) => Promise<void>;
   deleteCandidate: (id: string) => Promise<void>;
   addCategory: (title: string) => Promise<void>;
   loading: boolean;
@@ -15,76 +15,67 @@ interface DataContextType {
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
+// Simulated DB Utility (In a real scenario, this logic happens in PHP/Node/Python with MySQL)
+const dbSim = {
+  fetch: async (key: string, defaultVal: any) => {
+    await new Promise(r => setTimeout(r, 500)); // Network delay simulation
+    const data = localStorage.getItem(key);
+    return data ? JSON.parse(data) : defaultVal;
+  },
+  save: async (key: string, data: any) => {
+    await new Promise(r => setTimeout(r, 300)); // IO delay simulation
+    localStorage.setItem(key, JSON.stringify(data));
+  }
+};
+
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Simulate fetching data from MySQL via an API
   useEffect(() => {
-    const loadData = async () => {
+    const initData = async () => {
       setLoading(true);
-      // await fetch('/api/candidates').then(res => res.json()).then(data => setCandidates(data));
-      
-      const savedCandidates = localStorage.getItem('mss_candidates');
-      const savedCategories = localStorage.getItem('mss_categories');
-      
-      setCandidates(savedCandidates ? JSON.parse(savedCandidates) : MOCK_CANDIDATES);
-      setCategories(savedCategories ? JSON.parse(savedCategories) : CATEGORIES);
-      
+      const fetchedCandidates = await dbSim.fetch('mss_candidates', MOCK_CANDIDATES);
+      const fetchedCategories = await dbSim.fetch('mss_categories', CATEGORIES);
+      setCandidates(fetchedCandidates);
+      setCategories(fetchedCategories);
       setLoading(false);
     };
-    loadData();
+    initData();
   }, []);
 
-  useEffect(() => {
-    if (!loading) {
-      localStorage.setItem('mss_candidates', JSON.stringify(candidates));
-    }
-  }, [candidates, loading]);
-
-  useEffect(() => {
-    if (!loading) {
-      localStorage.setItem('mss_categories', JSON.stringify(categories));
-    }
-  }, [categories, loading]);
-
   const addCandidate = async (c: Omit<Candidate, 'id'>) => {
-    // In a real app with MySQL:
-    // const res = await fetch('/api/candidates', { method: 'POST', body: JSON.stringify(c) });
-    // const newCandidate = await res.json();
-    
-    const newCandidate = { ...c, id: Date.now().toString() };
-    setCandidates(prev => [...prev, newCandidate as Candidate]);
+    const newCandidate = { ...c, id: `db_${Date.now()}` };
+    const updated = [...candidates, newCandidate as Candidate];
+    setCandidates(updated);
+    await dbSim.save('mss_candidates', updated);
   };
 
   const updateCandidate = async (id: string, updates: Partial<Candidate>) => {
-    // In a real app with MySQL:
-    // await fetch(`/api/candidates/${id}`, { method: 'PUT', body: JSON.stringify(updates) });
-    
-    setCandidates(prev => prev.map(c => c.id === id ? { ...c, ...updates } : c));
+    const updated = candidates.map(c => c.id === id ? { ...c, ...updates } : c);
+    setCandidates(updated);
+    await dbSim.save('mss_candidates', updated);
   };
 
   const deleteCandidate = async (id: string) => {
-    // In a real app with MySQL:
-    // await fetch(`/api/candidates/${id}`, { method: 'DELETE' });
-    
-    setCandidates(prev => prev.filter(c => c.id !== id));
+    const updated = candidates.filter(c => c.id !== id);
+    setCandidates(updated);
+    await dbSim.save('mss_candidates', updated);
   };
 
   const addCategory = async (title: string) => {
-    // In a real app with MySQL:
-    // await fetch('/api/categories', { method: 'POST', body: JSON.stringify({title}) });
-    
     const id = title.toLowerCase().replace(/\s+/g, '-');
     const newCat: CategoryItem = {
       id,
       titleEn: title,
       titleTr: title,
-      imageUrl: 'https://images.unsplash.com/photo-1454165833767-027ff33027ef?q=80&w=500&auto=format&fit=crop',
+      imageUrl: 'https://images.unsplash.com/photo-1554151228-14d9def656e4?q=80&w=500&auto=format&fit=crop',
       link: '#'
     };
-    setCategories(prev => [...prev, newCat]);
+    const updated = [...categories, newCat];
+    setCategories(updated);
+    await dbSim.save('mss_categories', updated);
   };
 
   return (

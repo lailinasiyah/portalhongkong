@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../LanguageContext';
 import { useData } from '../DataContext';
+import { useAuth } from '../AuthContext';
 import { Candidate } from '../types';
 import PreviewModal from './PreviewModal';
 
@@ -12,10 +13,13 @@ interface CandidateSpreadsheetViewProps {
 
 const CandidateSpreadsheetView: React.FC<CandidateSpreadsheetViewProps> = ({ onBack, initialCategoryId }) => {
   const { t } = useLanguage();
-  const { candidates, categories, addCategory } = useData();
-  const [activeSheetId, setActiveSheetId] = useState(initialCategoryId || categories[0]?.id || 'housekeeper');
+  const { candidates, categories, addCategory, updateCandidate } = useData();
+  const { isAuthenticated, user } = useAuth();
+  const [activeSheetId, setActiveSheetId] = useState(initialCategoryId || categories[0]?.id || 'caregiving');
   const [preview, setPreview] = useState<{ type: 'pdf' | 'video', url: string, title: string } | null>(null);
   const [waCandidate, setWaCandidate] = useState<Candidate | null>(null);
+
+  const isAdmin = isAuthenticated && user?.role === 'admin';
 
   // Sync activeSheetId if initialCategoryId changes while component is mounted
   useEffect(() => {
@@ -37,6 +41,11 @@ const CandidateSpreadsheetView: React.FC<CandidateSpreadsheetViewProps> = ({ onB
   const handleAddSheet = () => {
     const name = prompt('Enter name for the new Sheet (Category):');
     if (name) addCategory(name);
+  };
+
+  const toggleCvAvailability = (candidate: Candidate) => {
+    if (!isAdmin) return;
+    updateCandidate(candidate.id, { cvAvailable: !candidate.cvAvailable });
   };
 
   return (
@@ -70,7 +79,9 @@ const CandidateSpreadsheetView: React.FC<CandidateSpreadsheetViewProps> = ({ onB
         <span>Insert</span>
         <span>Format</span>
         <span>Data</span>
-        <button onClick={handleAddSheet} className="text-green-700 font-bold">+ New Sheet</button>
+        {isAdmin && (
+          <button onClick={handleAddSheet} className="text-green-700 font-bold">+ New Sheet</button>
+        )}
       </div>
 
       <main className="flex-grow overflow-auto relative">
@@ -103,7 +114,7 @@ const CandidateSpreadsheetView: React.FC<CandidateSpreadsheetViewProps> = ({ onB
                 <td className="border border-gray-300 px-4 py-2 font-medium text-gray-700">
                   {candidate.sex === 'Male' ? t.male : t.female}
                 </td>
-                <td className="border border-gray-300 px-4 py-2 font-bold text-gray-800">{candidate.age} 歳</td>
+                <td className="border border-gray-300 px-4 py-2 font-bold text-gray-800">{candidate.age}</td>
                 <td className="border border-gray-300 px-4 py-2">
                    <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-tight ${
                      candidate.passportStatus === 'Ready' ? 'bg-blue-100 text-blue-600' : 'bg-yellow-100 text-yellow-700'
@@ -136,11 +147,23 @@ const CandidateSpreadsheetView: React.FC<CandidateSpreadsheetViewProps> = ({ onB
                   ) : <span className="text-gray-300">-</span>}
                 </td>
                 <td className="border border-gray-300 px-4 py-2 text-center">
-                   <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${
-                     candidate.cvAvailable ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                   }`}>
-                     {candidate.cvAvailable ? t.cvAvailable : t.cvNotAvailable}
-                   </span>
+                   {isAdmin ? (
+                     <button
+                       onClick={() => toggleCvAvailability(candidate)}
+                       className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95 ${
+                         candidate.cvAvailable ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-red-100 text-red-700 hover:bg-red-200'
+                       }`}
+                       title="Click to toggle availability (Admin only)"
+                     >
+                       {candidate.cvAvailable ? t.cvAvailable : t.cvNotAvailable}
+                     </button>
+                   ) : (
+                     <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${
+                       candidate.cvAvailable ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                     }`}>
+                       {candidate.cvAvailable ? t.cvAvailable : t.cvNotAvailable}
+                     </span>
+                   )}
                 </td>
                 <td className="border border-gray-300 px-4 py-2 text-right">
                    <button 

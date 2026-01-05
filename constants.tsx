@@ -10,11 +10,10 @@ export const CANDIDATE_STATS: CandidateStat[] = [
 ];
 
 export const MOCK_CANDIDATES: Candidate[] = [
-  // House Keeper
   {
     id: '1',
-    categoryId: 'housekeeper',
-    code: 'JM-2405037',
+    categoryId: 'house-keeper',
+    code: 'HK-24001',
     nameEn: 'Natasya Shelvi Adellia',
     nameLocal: 'NATASYA SHELVI ADELLIA',
     photoUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400&h=500&fit=crop',
@@ -27,8 +26,8 @@ export const MOCK_CANDIDATES: Candidate[] = [
   },
   {
     id: '2',
-    categoryId: 'housekeeper',
-    code: 'MJPNF-2402042',
+    categoryId: 'waiters',
+    code: 'WT-24002',
     nameEn: 'Dhiva Maharani',
     nameLocal: 'DHIVA MAHARANI',
     photoUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=400&h=500&fit=crop',
@@ -39,11 +38,10 @@ export const MOCK_CANDIDATES: Candidate[] = [
     passportStatus: 'Ready',
     cvAvailable: true
   },
-  // Waiterss
   {
-    id: 'wa-1',
-    categoryId: 'Waiterss',
-    code: 'FS-2501001',
+    id: '3',
+    categoryId: 'cook',
+    code: 'CK-24003',
     nameEn: 'Andi Pratama',
     nameLocal: 'ANDI PRATAMA',
     photoUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&h=500&fit=crop',
@@ -54,11 +52,10 @@ export const MOCK_CANDIDATES: Candidate[] = [
     passportStatus: 'Ready',
     cvAvailable: true
   },
-  // Cook
   {
-    id: 'co-1',
-    categoryId: 'cook',
-    code: 'FP-2501002',
+    id: '4',
+    categoryId: 'spa-theraphist',
+    code: 'ST-24004',
     nameEn: 'Siti Aminah',
     nameLocal: 'SITI AMINAH',
     photoUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=400&h=500&fit=crop',
@@ -68,82 +65,36 @@ export const MOCK_CANDIDATES: Candidate[] = [
     age: 21,
     passportStatus: 'In Process',
     cvAvailable: true
-  },
-  // SPA Therapist
-  {
-    id: 'ag-1',
-    categoryId: 'spa-theraphist',
-    code: 'AG-2501003',
-    nameEn: 'Budi Santoso',
-    nameLocal: 'BUDI SANTOSO',
-    photoUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&h=500&fit=crop',
-    resumeUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-    videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
-    sex: 'Male',
-    age: 24,
-    passportStatus: 'Ready',
-    cvAvailable: true
-  },
-  // Technical Intern
-  {
-    id: 'ti-1',
-    categoryId: 'technical-intern',
-    code: 'TI-2501004',
-    nameEn: 'Rizky Fadilah',
-    nameLocal: 'RIZKY FADILAH',
-    photoUrl: 'https://images.unsplash.com/photo-1554151228-14d9def656e4?q=80&w=400&h=500&fit=crop',
-    resumeUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-    videoUrl: 'https://www.w3schools.com/html/movie.mp4',
-    sex: 'Male',
-    age: 20,
-    passportStatus: 'In Process',
-    cvAvailable: false
-  },
-  // Building Cleaning
-  {
-    id: 'bc-1',
-    categoryId: 'building-cleaning',
-    code: 'BC-2501005',
-    nameEn: 'Lani Marlina',
-    nameLocal: 'LANI MARLINA',
-    photoUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400&h=500&fit=crop',
-    resumeUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-    videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
-    sex: 'Female',
-    age: 23,
-    passportStatus: 'Ready',
-    cvAvailable: true
   }
 ];
 
 export const CATEGORIES: CategoryItem[] = [
   {
-    id: 'Housekeeper',
+    id: 'house-keeper',
     titleEn: 'House Keeper',
-    titleTr: 'Garsonlar',
-    imageUrl: 'https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?q=80&w=500&auto=format&fit=crop',
+    titleTr: 'Kat Görevlisi',
+    imageUrl: 'public/assets/housekeeping.jpg',
     link: '#'
   },
   {
-    id: 'Waiters',
+    id: 'waiters',
     titleEn: 'Waiters',
-    titleTr: 'Garsonlar',
-    imageUrl: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=500&auto=format&fit=crop',
+    titleTr: 'Garson',
+    imageUrl: 'public/assets/waiters.webp',
     link: '#'
   },
   {
-    id: 'Cook',
+    id: 'cook',
     titleEn: 'Cook',
     titleTr: 'Aşçı',
-    imageUrl: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?q=80&w=500&auto=format&fit=crop',
+    imageUrl: 'public/assets/chef.webp',
     link: '#'
   },
   {
-    id: 'Spatheraphist',
+    id: 'spa-theraphist',
     titleEn: 'SPA Theraphist',
-    titleTr: 'Spa Terapistleri',
-    imageUrl: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=500&auto=format&fit=crop',
+    titleTr: 'SPA Terapisti',
+    imageUrl: 'public/assets/spatheraphist.jpg',
     link: '#'
-  },
- 
+  }
 ];

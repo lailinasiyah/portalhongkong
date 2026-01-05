@@ -15,7 +15,7 @@ const CategorySection: React.FC<CategorySectionProps> = ({ onViewGrid, onViewSpr
 
   return (
     <section className="bg-slate-50 pb-24">
-      {/* Banner / Divider with Red-White-Blue aesthetic */}
+      {/* Banner / Divider */}
       <div className="bg-blue-900 text-white text-center py-8 px-4 mb-16 shadow-2xl border-b-8 border-red-600 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-32 h-32 bg-red-600 opacity-10 rotate-45 transform translate-x-16 -translate-y-16"></div>
         <div className="relative z-10">
@@ -43,7 +43,7 @@ const CategorySection: React.FC<CategorySectionProps> = ({ onViewGrid, onViewSpr
                {t.candidatePrompt.split(',')[0]},
              </span>
              <PortalButton 
-              onClick={() => onViewGrid(categories[0]?.id || 'housekeeper')}
+              onClick={() => onViewGrid(categories[0]?.id || 'house-keeper')}
               variant="blue" 
               className="animate-pulse shadow-lg whitespace-nowrap"
             >
@@ -55,31 +55,30 @@ const CategorySection: React.FC<CategorySectionProps> = ({ onViewGrid, onViewSpr
            </div>
         </div>
 
-        {/* Category Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12 max-w-6xl mx-auto">
-          {categories.slice(0, 6).map((item) => (
+        {/* Category Grid - Updated to 2 columns per row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 max-w-6xl mx-auto">
+          {categories.map((item) => (
             <div key={item.id} className="group bg-white rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 flex flex-col">
-              <div className="relative h-48 overflow-hidden">
+              <div className="relative h-64 overflow-hidden">
                 <img 
                   src={item.imageUrl} 
                   alt={language === 'EN' ? item.titleEn : item.titleTr} 
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                  <span className="text-white text-xs font-bold uppercase tracking-widest">{t.learnMore}</span>
-                </div>
-              </div>
-              <div className="p-6 flex flex-col flex-grow items-center justify-between">
-                <div>
-                  <h4 className="text-gray-900 text-lg font-bold mb-1">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
+                <div className="absolute bottom-6 left-6 text-left">
+                  <h4 className="text-white text-2xl font-black mb-1 uppercase tracking-tight">
                     {language === 'EN' ? item.titleEn : item.titleTr}
                   </h4>
-                  <div className="w-12 h-1 bg-red-600 mx-auto mt-2 mb-6 rounded-full group-hover:w-24 transition-all duration-300"></div>
+                  <div className="w-12 h-1 bg-red-600 rounded-full group-hover:w-24 transition-all duration-300"></div>
                 </div>
+              </div>
+              <div className="p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+                <p className="text-gray-500 text-sm font-medium italic">Available candidates for {item.titleEn}</p>
                 <PortalButton 
                   onClick={() => onViewGrid(item.id)}
                   variant="blue" 
-                  className="w-full"
+                  className="w-full md:w-auto px-8"
                 >
                   {t.viewDetails}
                 </PortalButton>
@@ -88,34 +87,15 @@ const CategorySection: React.FC<CategorySectionProps> = ({ onViewGrid, onViewSpr
           ))}
         </div>
 
-        {/* Gallery Section */}
-        {categories.length > 6 && (
-          <div className="mt-12 flex flex-col items-center max-w-sm mx-auto group">
-            <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 w-full">
-               <div className="h-48 overflow-hidden">
-                  <img 
-                      src={categories[6].imageUrl} 
-                      alt={categories[6].titleEn} 
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-               </div>
-               <div className="p-6">
-                 <h4 className="text-gray-900 text-lg font-bold mb-6">
-                   {language === 'EN' ? categories[6].titleEn : categories[6].titleTr}
-                 </h4>
-                 <PortalButton variant="blue" onClick={() => onViewGrid(categories[6].id)} className="w-full">
-                  {t.viewDetails}
-                 </PortalButton>
-               </div>
-            </div>
-          </div>
-        )}
-
         {/* Final CTA */}
         <div className="mt-24 pb-12">
           <div className="h-px bg-gradient-to-r from-transparent via-red-200 to-transparent mb-12"></div>
           <p className="text-gray-800 text-xl md:text-2xl font-black mb-6 tracking-tight uppercase">{t.companyWebsite}</p>
-          <PortalButton variant="blue" className="px-12 py-3 text-lg rounded-full shadow-xl hover:scale-105 active:scale-95 transition-transform">
+          <PortalButton 
+            onClick={() => window.open('https://turki.mitragroup.id/', '_blank')}
+            variant="blue" 
+            className="px-12 py-3 text-lg rounded-full shadow-xl hover:scale-105 active:scale-95 transition-transform"
+          >
              {t.visitWebsite}
           </PortalButton>
         </div>

@@ -20,7 +20,7 @@ const Hero: React.FC = () => {
           {t.welcomeBadge}
         </div>
         <h1 className="text-4xl md:text-7xl lg:text-8xl font-black mb-4 drop-shadow-2xl tracking-tighter leading-none">
-          LPK (SO) MITRA <br className="hidden md:block"/> SARANA SEJAHTERA
+          MITRA SINERGI SUKSES<br className="hidden md:block"/> 
         </h1>
         <h2 className="text-2xl md:text-5xl font-bold mb-8 drop-shadow-lg text-red-500 opacity-95">
           {t.orgSub}

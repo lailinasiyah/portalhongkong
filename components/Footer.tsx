@@ -32,14 +32,14 @@ const Footer: React.FC = () => {
           <div className="flex flex-col items-center justify-center space-y-6">
             <div className="w-24 h-24 bg-white rounded-full p-2 flex items-center justify-center shadow-2xl">
               <img 
-                src="https://portal.lpkmss.com/wp-content/uploads/2023/12/LOGO-LPK-MSS-BULAT-300x300.png" 
+                src="assets/lpk.png" 
                 alt="LPK MSS Logo" 
                 className="w-full h-full object-contain"
               />
             </div>
             <div className="text-center">
               <h5 className="font-bold text-sm md:text-base text-blue-500 uppercase tracking-wider">
-                LPK (SO) MITRA SARANA SEJAHTERA
+                MITRA SINERGI SUKSES
               </h5>
               <p className="text-xs md:text-sm text-gray-500 mt-1">
                 {t.orgSub}
@@ -54,16 +54,12 @@ const Footer: React.FC = () => {
             </h4>
             <div className="space-y-4 text-sm text-gray-400">
               <div className="flex items-center justify-center md:justify-start">
-                <span className="mr-3">📸</span>
-                <span>@lpkmss2022</span>
-              </div>
-              <div className="flex items-center justify-center md:justify-start">
                 <span className="mr-3">📞</span>
-                <span>+62 82142679662</span>
+                <span>+62 822-7167-4145</span>
               </div>
               <div className="flex items-center justify-center md:justify-start">
                 <span className="mr-3">✉️</span>
-                <span>mitrajpmalang@gmail.com</span>
+                <span>lpkmitrasaranasejahtera@gmail.com</span>
               </div>
             </div>
           </div>

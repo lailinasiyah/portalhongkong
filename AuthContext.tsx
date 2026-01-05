@@ -18,11 +18,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const login = async (username: string, password: string): Promise<boolean> => {
-    // In a real production app, this would be a fetch call to a backend (PHP/Node/Python) 
-    // which queries the MySQL database to verify credentials.
-    // Example: const res = await fetch('/api/login', { method: 'POST', body: JSON.stringify({username, password}) });
+    // Simulated Backend Auth Check (This would call a REST API endpoint talking to MySQL)
+    await new Promise(r => setTimeout(r, 800)); // Security delay simulation
     
-    // For now, we simulate a successful login if fields are filled
+    // Hardcoded demo credentials: admin / admin123
     if (username === 'admin' && password === 'admin123') {
       const newUser: User = { username, role: 'admin' };
       setUser(newUser);
