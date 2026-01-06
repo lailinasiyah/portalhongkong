@@ -19,8 +19,8 @@ const Hero: React.FC = () => {
         <div className="inline-block bg-red-600 text-white text-[10px] md:text-sm font-bold px-4 py-1 rounded-full mb-6 tracking-widest uppercase animate-fade-in shadow-lg">
           {t.welcomeBadge}
         </div>
-        <h1 className="text-4xl md:text-7xl lg:text-8xl font-black mb-4 drop-shadow-2xl tracking-tighter leading-none">
-          MITRA SINERGI SUKSES<br className="hidden md:block"/> 
+        <h1 className="text-4xl md:text-7xl lg:text-7xl font-black mb-4 drop-shadow-2xl tracking-tighter leading-none">
+          PT. MITRA SINERGI SUKSES<br className="hidden md:block"/> 
         </h1>
         <h2 className="text-2xl md:text-5xl font-bold mb-8 drop-shadow-lg text-red-500 opacity-95">
           {t.orgSub}

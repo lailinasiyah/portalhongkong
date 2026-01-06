@@ -1,11 +1,24 @@
 
 import React from 'react';
-import { CANDIDATE_STATS } from '../constants';
+import { useData } from '../DataContext';
 import { useLanguage } from '../LanguageContext';
 
 const ResourceSection: React.FC = () => {
-  const { t } = useLanguage();
-  const maxCount = Math.max(...CANDIDATE_STATS.map(s => s.count));
+  const { t, language } = useLanguage();
+  const { candidates, categories } = useData();
+
+  // Calculate counts for each category dynamically based on existing candidates
+  const categoryStats = categories.map(cat => {
+    const count = candidates.filter(cand => cand.categoryId === cat.id).length;
+    return {
+      id: cat.id,
+      label: language === 'EN' ? cat.titleEn : cat.titleTr,
+      count: count
+    };
+  });
+
+  // Calculate the max count to scale the bars proportionally
+  const maxCount = Math.max(...categoryStats.map(s => s.count), 1);
 
   return (
     <section className="bg-white py-16 md:py-24">
@@ -20,13 +33,13 @@ const ResourceSection: React.FC = () => {
           </p>
         </div>
 
-        {/* Custom Bar Chart */}
+        {/* Custom Bar Chart representing Candidates by Category */}
         <div className="bg-gray-50 p-6 md:p-12 rounded-3xl shadow-inner border border-gray-100">
           <div className="flex items-end justify-between space-x-2 md:space-x-8 h-64 md:h-80 w-full mb-6 pt-10 px-4">
-            {CANDIDATE_STATS.map((stat, index) => {
+            {categoryStats.map((stat) => {
               const heightPercentage = (stat.count / maxCount) * 100;
               return (
-                <div key={stat.year} className="flex-1 flex flex-col items-center group relative h-full">
+                <div key={stat.id} className="flex-1 flex flex-col items-center group relative h-full">
                   {/* Tooltip-like value */}
                   <div className="absolute -top-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-red-600 text-white text-xs font-bold py-1 px-3 rounded shadow-lg whitespace-nowrap z-10">
                     {stat.count} {t.candidateUnit}
@@ -35,7 +48,7 @@ const ResourceSection: React.FC = () => {
                   {/* The Bar */}
                   <div 
                     className="w-full bg-gradient-to-t from-red-700 to-red-500 rounded-t-lg shadow-md group-hover:shadow-red-200 group-hover:scale-105 transition-all duration-500 ease-out relative cursor-pointer"
-                    style={{ height: `${heightPercentage}%` }}
+                    style={{ height: `${Math.max(heightPercentage, 5)}%` }} // Ensure even zero-count bars are slightly visible
                   >
                     <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     {/* Inline count for mobile */}
@@ -44,9 +57,9 @@ const ResourceSection: React.FC = () => {
                     </div>
                   </div>
                   
-                  {/* Year Label */}
-                  <div className="mt-4 text-gray-700 font-bold text-xs md:text-sm tracking-widest">
-                    {stat.year}
+                  {/* Category Label */}
+                  <div className="mt-4 text-gray-700 font-bold text-[9px] md:text-xs tracking-tight text-center uppercase leading-tight h-10 flex items-center justify-center">
+                    {stat.label}
                   </div>
                 </div>
               );

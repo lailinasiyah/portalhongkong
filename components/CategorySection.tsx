@@ -36,26 +36,25 @@ const CategorySection: React.FC<CategorySectionProps> = ({ onViewGrid, onViewSpr
       </div>
 
       <div className="container mx-auto px-4 text-center">
-        {/* Call to Action Box */}
+        {/* Call to Action Box - Color matched to active buttons */}
         <div className="inline-block bg-white border-2 border-dashed border-red-200 rounded-2xl shadow-sm py-6 px-10 mb-16 max-w-4xl w-full md:w-auto">
            <div className="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">
              <span className="text-gray-900 font-bold text-lg md:text-xl">
                {t.candidatePrompt.split(',')[0]},
              </span>
-             <PortalButton 
-              onClick={() => onViewGrid(categories[0]?.id || 'house-keeper')}
-              variant="blue" 
-              className="animate-pulse shadow-lg whitespace-nowrap"
+             {/* Static label colored same as active buttons (blue-700) */}
+             <div 
+              className="px-6 py-1.5 text-xs md:text-sm font-medium rounded shadow-md bg-blue-700 text-white cursor-default whitespace-nowrap select-none"
             >
               {t.viewDetails}
-            </PortalButton>
+            </div>
              <span className="text-gray-900 font-bold text-lg md:text-xl">
                {t.candidatePrompt.split(',').slice(1).join(',')}
              </span>
            </div>
         </div>
 
-        {/* Category Grid - Updated to 2 columns per row */}
+        {/* Category Grid - 2 columns per row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 max-w-6xl mx-auto">
           {categories.map((item) => (
             <div key={item.id} className="group bg-white rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 flex flex-col">

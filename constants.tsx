@@ -73,28 +73,28 @@ export const CATEGORIES: CategoryItem[] = [
     id: 'house-keeper',
     titleEn: 'House Keeper',
     titleTr: 'Kat Görevlisi',
-    imageUrl: 'public/assets/housekeeping.jpg',
+    imageUrl: '/assets/housekeeping.jpg',
     link: '#'
   },
   {
     id: 'waiters',
     titleEn: 'Waiters',
     titleTr: 'Garson',
-    imageUrl: 'public/assets/waiters.webp',
+    imageUrl: '/assets/waiters.webp',
     link: '#'
   },
   {
     id: 'cook',
     titleEn: 'Cook',
     titleTr: 'Aşçı',
-    imageUrl: 'public/assets/chef.webp',
+    imageUrl: '/assets/chef.webp',
     link: '#'
   },
   {
     id: 'spa-theraphist',
     titleEn: 'SPA Theraphist',
     titleTr: 'SPA Terapisti',
-    imageUrl: 'public/assets/spatheraphist.jpg',
+    imageUrl: '/assets/spatheraphist.jpg',
     link: '#'
   }
 ];

@@ -32,14 +32,14 @@ const Footer: React.FC = () => {
           <div className="flex flex-col items-center justify-center space-y-6">
             <div className="w-24 h-24 bg-white rounded-full p-2 flex items-center justify-center shadow-2xl">
               <img 
-                src="assets/lpk.png" 
+                src="assets/favicon.png" 
                 alt="LPK MSS Logo" 
                 className="w-full h-full object-contain"
               />
             </div>
             <div className="text-center">
               <h5 className="font-bold text-sm md:text-base text-blue-500 uppercase tracking-wider">
-                MITRA SINERGI SUKSES
+                PT. MITRA SINERGI SUKSES
               </h5>
               <p className="text-xs md:text-sm text-gray-500 mt-1">
                 {t.orgSub}
@@ -67,7 +67,7 @@ const Footer: React.FC = () => {
 
         <div className="mt-16 pt-8 border-t border-gray-800 text-center">
           <p className="text-xs text-gray-600 uppercase tracking-widest">
-            © {new Date().getFullYear()} LPK MITRA SARANA SEJAHTERA. ALL RIGHTS RESERVED.
+            © {new Date().getFullYear()} PT. MITRA SINERGI SUKSES. ALL RIGHTS RESERVED.
           </p>
         </div>
       </div>
