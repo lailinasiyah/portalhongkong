@@ -41,7 +41,7 @@ const Login: React.FC<LoginProps> = ({ onSuccess, onBack }) => {
         <div className="text-center mb-8">
           <div className="inline-block bg-white p-2 rounded-full shadow-md border-2 border-red-600 w-24 h-24 mb-4">
             <img 
-              src="assets/lpk.png" 
+              src="assets/favicon.png" 
               alt="LPK MSS Logo" 
               className="w-full h-full object-contain"
             />

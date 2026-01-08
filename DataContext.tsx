@@ -15,16 +15,22 @@ interface DataContextType {
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
-// Simulated DB Utility (In a real scenario, this logic happens in PHP/Node/Python with MySQL)
-const dbSim = {
-  fetch: async (key: string, defaultVal: any) => {
-    await new Promise(r => setTimeout(r, 500)); // Network delay simulation
-    const data = localStorage.getItem(key);
-    return data ? JSON.parse(data) : defaultVal;
+// Persistent Storage Utility using LocalStorage
+// This ensures data survives browser close and computer shutdown.
+const dbStore = {
+  fetchCandidates: (): Candidate[] => {
+    const data = localStorage.getItem('mss_portal_candidates_v2');
+    return data ? JSON.parse(data) : MOCK_CANDIDATES;
   },
-  save: async (key: string, data: any) => {
-    await new Promise(r => setTimeout(r, 300)); // IO delay simulation
-    localStorage.setItem(key, JSON.stringify(data));
+  fetchCategories: (): CategoryItem[] => {
+    const data = localStorage.getItem('mss_portal_categories_v2');
+    return data ? JSON.parse(data) : CATEGORIES;
+  },
+  saveCandidates: (data: Candidate[]) => {
+    localStorage.setItem('mss_portal_candidates_v2', JSON.stringify(data));
+  },
+  saveCategories: (data: CategoryItem[]) => {
+    localStorage.setItem('mss_portal_categories_v2', JSON.stringify(data));
   }
 };
 
@@ -33,35 +39,40 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Initialize data from persistent storage
   useEffect(() => {
     const initData = async () => {
       setLoading(true);
-      const fetchedCandidates = await dbSim.fetch('mss_candidates', MOCK_CANDIDATES);
-      const fetchedCategories = await dbSim.fetch('mss_categories', CATEGORIES);
-      setCandidates(fetchedCandidates);
-      setCategories(fetchedCategories);
+      // Simulate API call delay
+      await new Promise(r => setTimeout(r, 600));
+      setCandidates(dbStore.fetchCandidates());
+      setCategories(dbStore.fetchCategories());
       setLoading(false);
     };
     initData();
   }, []);
 
   const addCandidate = async (c: Omit<Candidate, 'id'>) => {
-    const newCandidate = { ...c, id: `db_${Date.now()}` };
+    const newCandidate = { ...c, id: `mss_${Date.now()}` };
     const updated = [...candidates, newCandidate as Candidate];
     setCandidates(updated);
-    await dbSim.save('mss_candidates', updated);
+    dbStore.saveCandidates(updated);
+    // Simulate network delay for "Backend API" feel
+    await new Promise(r => setTimeout(r, 500));
   };
 
   const updateCandidate = async (id: string, updates: Partial<Candidate>) => {
     const updated = candidates.map(c => c.id === id ? { ...c, ...updates } : c);
     setCandidates(updated);
-    await dbSim.save('mss_candidates', updated);
+    dbStore.saveCandidates(updated);
+    await new Promise(r => setTimeout(r, 300));
   };
 
   const deleteCandidate = async (id: string) => {
     const updated = candidates.filter(c => c.id !== id);
     setCandidates(updated);
-    await dbSim.save('mss_candidates', updated);
+    dbStore.saveCandidates(updated);
+    await new Promise(r => setTimeout(r, 300));
   };
 
   const addCategory = async (title: string) => {
@@ -75,7 +86,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
     const updated = [...categories, newCat];
     setCategories(updated);
-    await dbSim.save('mss_categories', updated);
+    dbStore.saveCategories(updated);
   };
 
   return (
