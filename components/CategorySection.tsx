@@ -14,7 +14,7 @@ const CategorySection: React.FC<CategorySectionProps> = ({ onViewGrid, onViewSpr
   const { categories } = useData();
 
   return (
-    <section className="bg-slate-50 pb-24">
+    <section className="bg-diagonal-stripes pb-24 relative">
       {/* Banner / Divider */}
       <div className="bg-blue-900 text-white text-center py-8 px-4 mb-16 shadow-2xl border-b-8 border-red-600 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-32 h-32 bg-red-600 opacity-10 rotate-45 transform translate-x-16 -translate-y-16"></div>
@@ -35,7 +35,7 @@ const CategorySection: React.FC<CategorySectionProps> = ({ onViewGrid, onViewSpr
         </div>
       </div>
 
-      <div className="container mx-auto px-4 text-center">
+      <div className="container mx-auto px-4 text-center relative z-10">
         {/* Call to Action Box - Color matched to active buttons */}
         <div className="inline-block bg-white border-2 border-dashed border-red-200 rounded-2xl shadow-sm py-6 px-10 mb-16 max-w-4xl w-full md:w-auto">
            <div className="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">

@@ -12,6 +12,16 @@
       body {
         font-family: 'Inter', 'Noto Sans JP', sans-serif;
       }
+      .bg-diagonal-stripes {
+        background-color: #ffffff;
+        background-image: repeating-linear-gradient(
+          -45deg,
+          #f1f5f9, /* slate-100 for a slightly cleaner gray */
+          #f1f5f9 4px, /* Increased stripe thickness */
+          transparent 4px,
+          transparent 24px /* Increased spacing between stripes */
+        );
+      }
     </style>
   <script type="importmap">
 {

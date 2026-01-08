@@ -16,6 +16,7 @@ export interface Candidate {
   id: string;
   categoryId: string;
   nameLocal: string;
+  nameEn: string;
   photoUrl: string;
   resumeUrl: string;
   videoUrl: string;

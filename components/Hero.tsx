@@ -7,22 +7,28 @@ const Hero: React.FC = () => {
 
   return (
     <div className="relative h-[70vh] md:h-[85vh] w-full overflow-hidden flex items-center justify-center text-center px-4">
-      {/* Background with optimized overlay */}
+      {/* Background with Turkey-themed image (Cappadocia) */}
       <div 
-        className="absolute inset-0 bg-cover bg-center bg-fixed"
-        style={{ backgroundImage: `url('https://portal.lpkmss.com/wp-content/uploads/2023/12/IMG_1234.jpg')` }}
+        className="absolute inset-0 bg-cover bg-center bg-fixed transition-opacity duration-1000"
+        style={{ 
+          backgroundImage: `url('https://images.unsplash.com/photo-1527838832700-5059252407fa?q=80&w=2000&auto=format&fit=crop')`,
+        }}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/70 backdrop-blur-[1px]"></div>
+        {/* Transparent Overlay - Not too thick, allows Turkey theme to show through */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-black/60 backdrop-blur-[2px]"></div>
+        
+        {/* Subtle Red/White tint to match theme */}
+        <div className="absolute inset-0 bg-red-900/10 mix-blend-multiply"></div>
       </div>
 
       <div className="relative z-10 max-w-6xl mx-auto text-white">
         <div className="inline-block bg-red-600 text-white text-[10px] md:text-sm font-bold px-4 py-1 rounded-full mb-6 tracking-widest uppercase animate-fade-in shadow-lg">
           {t.welcomeBadge}
         </div>
-        <h1 className="text-4xl md:text-7xl lg:text-7xl font-black mb-4 drop-shadow-2xl tracking-tighter leading-none">
-          PT. MITRA SINERGI SUKSES<br className="hidden md:block"/> 
+        <h1 className="text-4xl md:text-7xl lg:text-6xl font-black mb-4 drop-shadow-2xl tracking-tighter leading-none">
+          PT. MITRA SINERGI SUKSES <br className="hidden md:block"/>
         </h1>
-        <h2 className="text-2xl md:text-5xl font-bold mb-8 drop-shadow-lg text-red-500 opacity-95">
+        <h2 className="text-2xl md:text-3xl font-bold mb-8 drop-shadow-lg text-red-600 opacity-100 uppercase tracking-tight">
           {t.orgSub}
         </h2>
         <div className="w-24 h-1.5 bg-red-600 mx-auto mb-8 rounded-full shadow-lg"></div>
@@ -30,6 +36,9 @@ const Hero: React.FC = () => {
           {t.subWelcome}
         </p>
       </div>
+      
+      {/* Bottom fade for smoother transition to next section */}
+      <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white to-transparent"></div>
     </div>
   );
 };
