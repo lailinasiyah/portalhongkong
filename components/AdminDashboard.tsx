@@ -10,13 +10,13 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
   // Form State
   const [formData, setFormData] = useState<Omit<Candidate, 'id'>>({
-    categoryId: 'caregiving',
-    code: '',
+    categoryId: categories[0]?.id || 'house-keeper',
     nameEn: '',
     nameLocal: '',
     photoUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400&h=500&fit=crop',
     resumeUrl: '',
     videoUrl: '',
+    certificateUrl: '',
     sex: 'Female',
     age: 20,
     passportStatus: 'Ready',
@@ -31,8 +31,6 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Ensure nameLocal is at least set to nameEn if it was empty, 
-    // since we removed the manual input but the UI still displays it.
     const finalData = {
       ...formData,
       nameLocal: formData.nameLocal || formData.nameEn
@@ -61,13 +59,13 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             setIsAdding(true); 
             setEditingId(null);
             setFormData({
-              categoryId: categories[0]?.id || 'caregiving',
-              code: '',
+              categoryId: categories[0]?.id || 'house-keeper',
               nameEn: '',
               nameLocal: '',
               photoUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400&h=500&fit=crop',
               resumeUrl: '',
               videoUrl: '',
+              certificateUrl: '',
               sex: 'Female',
               age: 20,
               passportStatus: 'Ready',
@@ -86,9 +84,9 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             <thead className="bg-gray-100 text-[10px] font-black uppercase tracking-widest text-gray-500">
               <tr>
                 <th className="px-6 py-4">Photo</th>
-                <th className="px-6 py-4">Name & Code</th>
+                <th className="px-6 py-4">Name</th>
                 <th className="px-6 py-4">Sheet / Category</th>
-                <th className="px-6 py-4">Links (CV/VID)</th>
+                <th className="px-6 py-4">Links (CV/VID/CERT)</th>
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
@@ -100,7 +98,7 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                   </td>
                   <td className="px-6 py-4">
                     <p className="font-bold text-gray-900">{c.nameEn}</p>
-                    <p className="text-[10px] text-blue-600 font-bold uppercase">{c.code}</p>
+                    <p className="text-[10px] text-gray-400 font-medium uppercase">{c.passportStatus}</p>
                   </td>
                   <td className="px-6 py-4">
                     <span className="text-xs font-bold text-gray-500 uppercase">{c.categoryId}</span>
@@ -109,6 +107,7 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                     <div className="flex space-x-2">
                       <span className={`w-3 h-3 rounded-full ${c.resumeUrl ? 'bg-green-500' : 'bg-gray-200'}`} title="CV Status"></span>
                       <span className={`w-3 h-3 rounded-full ${c.videoUrl ? 'bg-blue-500' : 'bg-gray-200'}`} title="Video Status"></span>
+                      <span className={`w-3 h-3 rounded-full ${c.certificateUrl ? 'bg-yellow-500' : 'bg-gray-200'}`} title="Certificate Status"></span>
                     </div>
                   </td>
                   <td className="px-6 py-4 text-right space-x-2">
@@ -132,13 +131,9 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 <h3 className="text-xl font-black uppercase tracking-widest">{editingId ? 'Edit Candidate' : 'Add New Candidate'}</h3>
               </div>
               <div className="p-6 grid grid-cols-2 gap-4 max-h-[70vh] overflow-y-auto">
-                <div className="col-span-2 md:col-span-1">
+                <div className="col-span-2">
                   <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Full Name (English)</label>
                   <input type="text" value={formData.nameEn} onChange={e => setFormData({...formData, nameEn: e.target.value})} className="w-full p-2 border border-gray-200 rounded text-sm" required />
-                </div>
-                <div className="col-span-2 md:col-span-1">
-                  <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Code</label>
-                  <input type="text" value={formData.code} onChange={e => setFormData({...formData, code: e.target.value})} className="w-full p-2 border border-gray-200 rounded text-sm" placeholder="JM-2405037" required />
                 </div>
                 <div className="col-span-2 md:col-span-1">
                   <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Sheet / Category</label>
@@ -165,12 +160,16 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                   </select>
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">CV PDF URL (Dashboard Upload Simulation)</label>
+                  <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">CV PDF URL</label>
                   <input type="url" value={formData.resumeUrl} onChange={e => setFormData({...formData, resumeUrl: e.target.value})} className="w-full p-2 border border-gray-200 rounded text-sm" placeholder="https://..." />
                 </div>
                 <div className="col-span-2">
                   <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Intro Video URL</label>
                   <input type="url" value={formData.videoUrl} onChange={e => setFormData({...formData, videoUrl: e.target.value})} className="w-full p-2 border border-gray-200 rounded text-sm" placeholder="https://..." />
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Certificate URL</label>
+                  <input type="url" value={formData.certificateUrl} onChange={e => setFormData({...formData, certificateUrl: e.target.value})} className="w-full p-2 border border-gray-200 rounded text-sm" placeholder="https://..." />
                 </div>
                 <div className="col-span-2">
                   <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Photo URL</label>
@@ -190,3 +189,4 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 };
 
 export default AdminDashboard;
+  

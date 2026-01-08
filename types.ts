@@ -15,12 +15,11 @@ export interface CandidateStat {
 export interface Candidate {
   id: string;
   categoryId: string;
-  code: string;
-  nameEn: string;
   nameLocal: string;
   photoUrl: string;
   resumeUrl: string;
   videoUrl: string;
+  certificateUrl: string;
   sex: 'Male' | 'Female';
   age: number;
   passportStatus: string;
