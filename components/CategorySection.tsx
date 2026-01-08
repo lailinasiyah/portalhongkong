@@ -93,7 +93,7 @@ const CategorySection: React.FC<CategorySectionProps> = ({ onViewGrid, onViewSpr
           <div className="h-px bg-gradient-to-r from-transparent via-red-200 to-transparent mb-12"></div>
           <p className="text-gray-800 text-xl md:text-2xl font-black mb-6 tracking-tight uppercase">{t.companyWebsite}</p>
           <PortalButton 
-            onClick={() => window.open('https://turki.mitragroup.id/', '_blank')}
+            onClick={() => window.open('https://asyakoprusu.com/', '_blank')}
             variant="blue" 
             className="px-12 py-3 text-lg rounded-full shadow-xl hover:scale-105 active:scale-95 transition-transform"
           >
