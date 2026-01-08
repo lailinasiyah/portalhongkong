@@ -47,7 +47,7 @@ const Login: React.FC<LoginProps> = ({ onSuccess, onBack }) => {
             />
           </div>
           <h2 className="text-2xl font-black text-blue-900 uppercase tracking-widest">Admin Access</h2>
-          <p className="text-gray-500 text-sm font-medium mt-1 uppercase tracking-tight">LPK Mitra Sarana Sejahtera</p>
+          <p className="text-gray-500 text-sm font-medium mt-1 uppercase tracking-tight">PT. MITRA SINERGI SUKSES</p>
         </div>
 
         {/* Login Form Card */}

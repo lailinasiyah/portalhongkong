@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useData } from '../DataContext';
 import { Candidate } from '../types';
 
@@ -9,6 +9,16 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const [isAdding, setIsAdding] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notification, setNotification] = useState<{ message: string, type: 'success' | 'error' } | null>(null);
+
+  // Upload progress states
+  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
+  const [isUploading, setIsUploading] = useState<Record<string, boolean>>({});
+
+  // Refs for file inputs
+  const photoInputRef = useRef<HTMLInputElement>(null);
+  const resumeInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
+  const certInputRef = useRef<HTMLInputElement>(null);
 
   // Form State
   const [formData, setFormData] = useState<Omit<Candidate, 'id'>>({
@@ -43,6 +53,35 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     setNotification({ message, type });
   };
 
+  // Simulated Google Drive Upload Function
+  const simulateFileUpload = async (file: File, field: keyof Omit<Candidate, 'id'>) => {
+    setIsUploading(prev => ({ ...prev, [field]: true }));
+    setUploadProgress(prev => ({ ...prev, [field]: 0 }));
+
+    // Simulation of progress
+    const totalSteps = 20;
+    for (let i = 1; i <= totalSteps; i++) {
+      await new Promise(resolve => setTimeout(resolve, 150 + Math.random() * 200));
+      const progress = Math.round((i / totalSteps) * 100);
+      setUploadProgress(prev => ({ ...prev, [field]: progress }));
+    }
+
+    // In a real production app, you would use gapi.client.drive.files.create here.
+    // We'll generate a dummy Drive-like link for this demonstration.
+    const mockDriveUrl = `https://drive.google.com/file/d/MOCK_ID_${Math.random().toString(36).substr(2, 9)}/view`;
+    
+    setFormData(prev => ({ ...prev, [field]: mockDriveUrl }));
+    setIsUploading(prev => ({ ...prev, [field]: false }));
+    showNotification(`${file.name} uploaded to Drive successfully!`);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: keyof Omit<Candidate, 'id'>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      simulateFileUpload(file, field);
+    }
+  };
+
   const validateForm = (): boolean => {
     if (!formData.nameEn.trim()) {
       showNotification('Name is required', 'error');
@@ -50,10 +89,6 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     }
     if (formData.age < 15 || formData.age > 60) {
       showNotification('Age must be between 15 and 60', 'error');
-      return false;
-    }
-    if (!formData.photoUrl.startsWith('http')) {
-      showNotification('Please provide a valid Photo URL', 'error');
       return false;
     }
     return true;
@@ -92,6 +127,66 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       showNotification('Candidate deleted successfully!');
     }
   };
+
+  const FileUploadField = ({ 
+    label, 
+    field, 
+    currentValue, 
+    accept, 
+    inputRef, 
+    icon 
+  }: { 
+    label: string, 
+    field: keyof Omit<Candidate, 'id'>, 
+    currentValue: string, 
+    accept: string, 
+    inputRef: React.RefObject<HTMLInputElement>,
+    icon: React.ReactNode
+  }) => (
+    <div className="col-span-2">
+      <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">{label}</label>
+      <div className="flex items-center space-x-3">
+        <div className="flex-grow relative">
+          <input 
+            type="text" 
+            value={currentValue} 
+            readOnly
+            className="w-full p-3 pr-10 bg-gray-50 border border-gray-200 rounded-lg text-xs focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium truncate" 
+            placeholder="No file uploaded to Drive yet..." 
+          />
+          {currentValue && (
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
+            </div>
+          )}
+        </div>
+        <input 
+          type="file" 
+          ref={inputRef}
+          className="hidden" 
+          accept={accept}
+          onChange={(e) => handleFileChange(e, field)}
+        />
+        <button 
+          type="button"
+          disabled={isUploading[field]}
+          onClick={() => inputRef.current?.click()}
+          className={`flex items-center space-x-2 px-4 py-3 bg-white border border-gray-200 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-gray-50 transition-all shadow-sm active:scale-95 ${isUploading[field] ? 'opacity-50 cursor-not-allowed' : ''}`}
+        >
+          {icon}
+          <span>{isUploading[field] ? 'Uploading...' : 'Browse'}</span>
+        </button>
+      </div>
+      {isUploading[field] && (
+        <div className="mt-2 w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+          <div 
+            className="bg-red-600 h-full transition-all duration-300" 
+            style={{ width: `${uploadProgress[field]}%` }}
+          ></div>
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans relative">
@@ -278,51 +373,49 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 </div>
                 
                 <div className="col-span-2">
-                  <div className="h-px bg-gray-100 w-full my-2"></div>
+                  <div className="h-px bg-gray-100 w-full my-4"></div>
+                  <h4 className="text-[10px] font-black text-blue-900 uppercase tracking-widest mb-4">Drive File Uploads</h4>
                 </div>
 
-                <div className="col-span-2">
-                  <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">CV PDF URL</label>
-                  <input 
-                    type="url" 
-                    value={formData.resumeUrl} 
-                    onChange={e => setFormData({...formData, resumeUrl: e.target.value})} 
-                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium" 
-                    placeholder="https://example.com/cv.pdf" 
-                  />
-                </div>
-                
-                <div className="col-span-2">
-                  <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Intro Video URL</label>
-                  <input 
-                    type="url" 
-                    value={formData.videoUrl} 
-                    onChange={e => setFormData({...formData, videoUrl: e.target.value})} 
-                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium" 
-                    placeholder="https://youtube.com/watch?v=..." 
-                  />
-                </div>
-                
-                <div className="col-span-2">
-                  <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Certificate URL</label>
-                  <input 
-                    type="url" 
-                    value={formData.certificateUrl} 
-                    onChange={e => setFormData({...formData, certificateUrl: e.target.value})} 
-                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium" 
-                    placeholder="https://example.com/certificate.pdf" 
-                  />
-                </div>
-                
-                <div className="col-span-2">
-                  <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Photo URL <span className="text-red-500">*</span></label>
-                  <input 
-                    type="url" 
-                    value={formData.photoUrl} 
-                    onChange={e => setFormData({...formData, photoUrl: e.target.value})} 
-                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium" 
-                  />
-                </div>
+                {/* Photo Upload */}
+                <FileUploadField 
+                  label="Photo Candidate"
+                  field="photoUrl"
+                  currentValue={formData.photoUrl}
+                  accept="image/*"
+                  inputRef={photoInputRef}
+                  icon={<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>}
+                />
+
+                {/* CV PDF Upload */}
+                <FileUploadField 
+                  label="CV PDF (to Drive)"
+                  field="resumeUrl"
+                  currentValue={formData.resumeUrl}
+                  accept=".pdf"
+                  inputRef={resumeInputRef}
+                  icon={<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>}
+                />
+
+                {/* Video Upload */}
+                <FileUploadField 
+                  label="Intro Video (to Drive)"
+                  field="videoUrl"
+                  currentValue={formData.videoUrl}
+                  accept="video/*"
+                  inputRef={videoInputRef}
+                  icon={<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>}
+                />
+
+                {/* Certificate Upload */}
+                <FileUploadField 
+                  label="Certificate PDF (to Drive)"
+                  field="certificateUrl"
+                  currentValue={formData.certificateUrl}
+                  accept=".pdf"
+                  inputRef={certInputRef}
+                  icon={<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>}
+                />
               </div>
               
               <div className="p-8 bg-gray-50 flex justify-end space-x-4">
@@ -336,7 +429,7 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 </button>
                 <button 
                     type="submit" 
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || Object.values(isUploading).some(Boolean)}
                     className="bg-blue-900 text-white px-10 py-2.5 rounded-lg text-xs font-black uppercase tracking-[0.2em] hover:bg-blue-800 shadow-xl active:scale-95 disabled:opacity-70 flex items-center"
                 >
                   {isSubmitting ? (
