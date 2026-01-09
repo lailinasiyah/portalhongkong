@@ -30,7 +30,7 @@ const Footer: React.FC = () => {
 
           {/* Logo & Org Name */}
           <div className="flex flex-col items-center justify-center space-y-6">
-            <div className="w-24 h-24 bg-white rounded-full p-2 flex items-center justify-center shadow-2xl">
+            <div className="w-24 h-24 rounded-full p-2 flex items-center justify-center shadow-2xl">
               <img 
                 src="assets/favicon.png" 
                 alt="LPK MSS Logo" 
