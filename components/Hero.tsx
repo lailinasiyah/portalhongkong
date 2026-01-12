@@ -21,14 +21,11 @@ const Hero: React.FC = () => {
         <div className="absolute inset-0 bg-red-900/10 mix-blend-multiply"></div>
       </div>
 
-      <div className="relative z-10 max-w-6xl mx-auto text-white">
-        <div className="inline-block bg-red-600 text-white text-[10px] md:text-sm font-bold px-4 py-1 rounded-full mb-6 tracking-widest uppercase animate-fade-in shadow-lg">
-          {t.welcomeBadge}
-        </div>
-        <h1 className="text-4xl md:text-7xl lg:text-6xl font-black mb-4 drop-shadow-2xl tracking-tighter leading-none">
-          PT. MITRA SINERGI SUKSES <br className="hidden md:block"/>
+      <div className="relative z-10 max-w-6xl mx-auto text-white mt-12">
+        <h1 className="text-4xl md:text-7xl lg:text-8xl font-black mb-4 drop-shadow-2xl tracking-tighter leading-none">
+          LPK (SO) MITRA <br className="hidden md:block"/> SARANA SEJAHTERA
         </h1>
-        <h2 className="text-2xl md:text-3xl font-bold mb-8 drop-shadow-lg text-red-600 opacity-100 uppercase tracking-tight">
+        <h2 className="text-2xl md:text-5xl font-bold mb-8 drop-shadow-lg text-red-600 opacity-100 uppercase tracking-tight">
           {t.orgSub}
         </h2>
         <div className="w-24 h-1.5 bg-red-600 mx-auto mb-8 rounded-full shadow-lg"></div>

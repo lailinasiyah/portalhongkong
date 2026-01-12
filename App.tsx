@@ -15,25 +15,32 @@ import { DataProvider } from './DataContext';
 import { AuthProvider, useAuth } from './AuthContext';
 
 const MainApp: React.FC = () => {
-  const [view, setView] = useState<'home' | 'grid' | 'spreadsheet' | 'admin' | 'login'>('home');
+  const [view, setView] = useState<'home' | 'grid' | 'spreadsheet' | 'admin'>('home');
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [appLoading, setAppLoading] = useState(true);
   const [isFadingOut, setIsFadingOut] = useState(false);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isAdmin } = useAuth();
 
-  // Initial loader logic
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsFadingOut(true);
-      setTimeout(() => setAppLoading(false), 500); // Wait for fade animation to complete
-    }, 2500);
+      setTimeout(() => setAppLoading(false), 2000);
+    }, 1500);
     return () => clearTimeout(timer);
   }, []);
 
-  // Scroll to top when changing views
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [view]);
+
+  // Jika belum login dan loader sudah selesai, paksa ke halaman Login
+  if (!appLoading && !isAuthenticated) {
+    return (
+      <LanguageProvider>
+        <Login onSuccess={() => setView('home')} />
+      </LanguageProvider>
+    );
+  }
 
   const handleViewGrid = (categoryId: string) => {
     setSelectedCategoryId(categoryId);
@@ -48,10 +55,8 @@ const MainApp: React.FC = () => {
   };
 
   const handleAdminClick = () => {
-    if (isAuthenticated) {
+    if (isAdmin) {
       setView('admin');
-    } else {
-      setView('login');
     }
   };
 
@@ -59,7 +64,7 @@ const MainApp: React.FC = () => {
     <div className={`transition-opacity duration-500 ${isFadingOut && appLoading ? 'opacity-0' : 'opacity-100'}`}>
       {appLoading && <Loader />}
       
-      {!appLoading && (
+      {!appLoading && isAuthenticated && (
         <>
           {view === 'home' && (
             <div className="min-h-screen bg-white">
@@ -75,12 +80,6 @@ const MainApp: React.FC = () => {
               <Footer />
             </div>
           )}
-          {view === 'login' && (
-            <Login 
-              onSuccess={() => setView('admin')} 
-              onBack={() => setView('home')} 
-            />
-          )}
           {view === 'grid' && (
             <CandidateGridView 
               categoryId={selectedCategoryId} 
@@ -94,10 +93,16 @@ const MainApp: React.FC = () => {
             />
           )}
           {view === 'admin' && (
-            isAuthenticated ? (
+            isAdmin ? (
               <AdminDashboard onBack={() => setView('home')} />
             ) : (
-              <Login onSuccess={() => setView('admin')} onBack={() => setView('home')} />
+              <div className="h-screen flex items-center justify-center bg-gray-100">
+                <div className="text-center p-8 bg-white rounded-2xl shadow-xl">
+                  <h2 className="text-2xl font-black text-red-600 mb-2 uppercase">Access Denied</h2>
+                  <p className="text-gray-500 mb-6">You do not have permission to view this page.</p>
+                  <button onClick={() => setView('home')} className="px-6 py-2 bg-blue-900 text-white rounded font-bold uppercase text-xs">Return Home</button>
+                </div>
+              </div>
             )
           )}
         </>

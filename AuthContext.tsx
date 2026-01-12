@@ -7,9 +7,14 @@ interface AuthContextType {
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
   isAuthenticated: boolean;
+  isAdmin: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// Definisi User Lists berdasarkan permintaan
+const ADMIN_USERS = ['alivia', 'rani', 'lailin'];
+const VISITOR_USERS = ['agency', 'victor', 'wesley', 'daia', 'dewe', 'elis', 'atik', 'indah'];
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(() => {
@@ -18,16 +23,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const login = async (username: string, password: string): Promise<boolean> => {
-    // Simulated Backend Auth Check (This would call a REST API endpoint talking to MySQL)
-    await new Promise(r => setTimeout(r, 800)); // Security delay simulation
+    // Simulasi delay keamanan
+    await new Promise(r => setTimeout(r, 800));
     
-    // Hardcoded demo credentials: admin / admin123
-    if (username === 'admin' && password === 'admin123') {
-      const newUser: User = { username, role: 'admin' };
+    const lowerUsername = username.toLowerCase();
+    
+    // Validasi Password Spesifik: password harus sama dengan username + '123'
+    if (password !== lowerUsername + '123') return false;
+
+    let role: 'admin' | 'user' | null = null;
+
+    if (ADMIN_USERS.includes(lowerUsername)) {
+      role = 'admin';
+    } else if (VISITOR_USERS.includes(lowerUsername)) {
+      role = 'user';
+    }
+
+    if (role) {
+      const newUser: User = { username: lowerUsername, role };
       setUser(newUser);
       localStorage.setItem('mss_auth_user', JSON.stringify(newUser));
       return true;
     }
+    
     return false;
   };
 
@@ -36,8 +54,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('mss_auth_user');
   };
 
+  const isAdmin = user?.role === 'admin';
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user, isAdmin }}>
       {children}
     </AuthContext.Provider>
   );

@@ -5,7 +5,7 @@ import PortalButton from './PortalButton';
 
 interface LoginProps {
   onSuccess: () => void;
-  onBack: () => void;
+  onBack?: () => void;
 }
 
 const Login: React.FC<LoginProps> = ({ onSuccess, onBack }) => {
@@ -25,84 +25,82 @@ const Login: React.FC<LoginProps> = ({ onSuccess, onBack }) => {
       if (success) {
         onSuccess();
       } else {
-        setError('Invalid username or password. (Hint: admin / admin123)');
+        setError('Login Gagal. Pastikan Username terdaftar dan Password benar.');
       }
     } catch (err) {
-      setError('An error occurred. Please try again.');
+      setError('Terjadi kesalahan pada sistem.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-diagonal-stripes flex items-center justify-center px-4 py-12">
       <div className="max-w-md w-full">
         {/* Logo Section */}
-        <div className="text-center mb-8">
-          <div className="inline-block bg-white p-2 rounded-full shadow-md border-2 border-red-600 w-24 h-24 mb-4">
+        <div className="text-center mb-8 animate-in fade-in slide-in-from-top-4 duration-700">
+          <div className="inline-block bg-white p-3 rounded-full shadow-2xl border-4 border-red-600 w-28 h-28 mb-4">
             <img 
-              src="assets/favicon.png" 
+              src="assets/lpk.png" 
               alt="LPK MSS Logo" 
               className="w-full h-full object-contain"
             />
           </div>
-          <h2 className="text-2xl font-black text-blue-900 uppercase tracking-widest">Admin Access</h2>
-          <p className="text-gray-500 text-sm font-medium mt-1 uppercase tracking-tight">PT. MITRA SINERGI SUKSES</p>
+          <h2 className="text-3xl font-black text-blue-900 uppercase tracking-tighter">Portal Access</h2>
+          <p className="text-red-600 text-xs font-black mt-1 uppercase tracking-[0.3em]">Mitra Sarana Sejahtera</p>
         </div>
 
         {/* Login Form Card */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden animate-in zoom-in-95 duration-500">
           <div className="bg-red-600 h-2 w-full"></div>
-          <form onSubmit={handleSubmit} className="p-8">
+          <form onSubmit={handleSubmit} className="p-10">
             {error && (
-              <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 text-xs font-bold uppercase">
+              <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 text-[10px] font-black uppercase tracking-tight">
                 {error}
               </div>
             )}
             
             <div className="space-y-6">
               <div>
-                <label className="block text-[10px] font-black uppercase text-gray-400 mb-1 tracking-widest">Username</label>
+                <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Username Access</label>
                 <input 
                   type="text" 
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all text-sm font-medium"
-                  placeholder="Enter your username"
+                  className="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-4 focus:ring-red-500/10 focus:border-red-500 outline-none transition-all text-sm font-bold"
+                  placeholder="Masukkan username Anda"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-black uppercase text-gray-400 mb-1 tracking-widest">Password</label>
+                <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Security Password</label>
                 <input 
                   type="password" 
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all text-sm font-medium"
+                  className="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-4 focus:ring-red-500/10 focus:border-red-500 outline-none transition-all text-sm font-bold"
                   placeholder="••••••••"
                   required
                 />
               </div>
 
-              <div className="pt-2">
-                <PortalButton 
-                  variant="primary" 
-                  className="w-full py-3 text-sm font-black uppercase tracking-[0.2em] shadow-lg hover:shadow-red-200"
+              <div className="pt-4">
+                <button 
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-4 bg-blue-900 hover:bg-blue-800 text-white text-xs font-black uppercase tracking-[0.3em] rounded-xl shadow-xl transition-all active:scale-95 disabled:opacity-50"
                 >
-                  {loading ? 'Authenticating...' : 'Sign In'}
-                </PortalButton>
+                  {loading ? 'Authenticating...' : 'Sign In Portal'}
+                </button>
               </div>
             </div>
           </form>
           
-          <div className="p-6 bg-gray-50 border-t border-gray-100 flex justify-center">
-            <button 
-              onClick={onBack}
-              className="text-[10px] font-black uppercase text-gray-400 hover:text-red-600 transition-colors tracking-widest"
-            >
-              Back to Portal
-            </button>
+          <div className="p-6 bg-gray-50 border-t border-gray-100 text-center">
+            <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">
+              Authorized Personnel Only • IP Tracked
+            </p>
           </div>
         </div>
       </div>

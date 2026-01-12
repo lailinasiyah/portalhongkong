@@ -9,7 +9,7 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ onAdminClick }) => {
   const { setLanguage, language, t } = useLanguage();
-  const { isAuthenticated, logout, user } = useAuth();
+  const { isAuthenticated, logout, user, isAdmin } = useAuth();
 
   return (
     <nav className="absolute top-0 left-0 w-full z-20 p-4 md:p-6 flex justify-between items-center md:items-start">
@@ -57,12 +57,14 @@ const Navbar: React.FC<NavbarProps> = ({ onAdminClick }) => {
                 <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
                 <span className="text-[10px] font-black uppercase text-gray-700 tracking-widest">{user?.username}</span>
               </div>
+            {isAdmin && (
               <button 
                 onClick={onAdminClick}
-                className="bg-blue-900 hover:bg-blue-800 text-white px-6 py-2 rounded-md font-medium transition-colors text-sm shadow-md active:scale-95"
+                className="bg-[#1e3a8a] hover:bg-[#1a357d] text-white px-5 py-2.5 rounded-md font-black text-[10px] uppercase tracking-[0.2em] shadow-xl transition-all active:scale-95 border-b-4 border-blue-900"
               >
-                Dashboard
+                DASHBOARD
               </button>
+            )}
               <button 
                 onClick={logout}
                 className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-md font-medium transition-colors text-sm shadow-md active:scale-95"
