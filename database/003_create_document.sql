@@ -9,3 +9,7 @@ CREATE TABLE IF NOT EXISTS document (
     FOREIGN KEY (applicant_id) REFERENCES applicant(id)
         ON DELETE CASCADE
 );
+
+ALTER TABLE document
+ADD UNIQUE KEY uniq_applicant_type (applicant_id, type);
+
