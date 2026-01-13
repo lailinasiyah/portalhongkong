@@ -15,12 +15,33 @@ class ComposerStaticInitbcab2fc2aaf00b3b4b09251217398100
         array (
             'app\\' => 4,
         ),
+        'M' => 
+        array (
+            'MatthiasMullie\\PathConverter\\' => 29,
+            'MatthiasMullie\\Minify\\' => 22,
+        ),
+        'K' => 
+        array (
+            'KnifeLemon\\CommentTemplate\\' => 27,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
         'app\\' => 
         array (
             0 => __DIR__ . '/../..' . '/app',
+        ),
+        'MatthiasMullie\\PathConverter\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/matthiasmullie/path-converter/src',
+        ),
+        'MatthiasMullie\\Minify\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/matthiasmullie/minify/src',
+        ),
+        'KnifeLemon\\CommentTemplate\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/knifelemon/comment-template/src',
         ),
     );
 

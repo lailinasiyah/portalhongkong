@@ -87,26 +87,49 @@ require 'function/authentication.php';
 require 'function/applicant.php';
 require 'function/document.php';
 require 'function/dashboard.php';
+require 'function/refcategory.php';
 /**
  * end route main module
  */
+// Flight::before('start', function () {
+//     $publicRoutes = [
+//         '/',
+//         '/auth/login',
+//     ];
+
+//     $basePath = '/rekrutment-filemanager';
+//     $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+//     if (str_starts_with($path, $basePath)) {
+//         $path = substr($path, strlen($basePath));
+//     }
+
+//     if (in_array($path, $publicRoutes)) {
+//         return;
+//     }
+
+//     authorizeRoute();
+// });
+
+// =====================
+// CORS CONFIG
+// =====================
 Flight::before('start', function () {
-    $publicRoutes = [
-        '/auth/login',
-    ];
 
-    $basePath = '/rekrutment-filemanager';
-    $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    header("Access-Control-Allow-Origin: *"); 
+    // kalau mau lebih aman:
+    // header("Access-Control-Allow-Origin: http://localhost:3000");
 
-    if (str_starts_with($path, $basePath)) {
-        $path = substr($path, strlen($basePath));
+    header("Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS");
+    header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+    header("Access-Control-Allow-Credentials: true");
+    header("Content-Type: application/json; charset=UTF-8");
+
+    // Handle preflight request
+    if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+        http_response_code(200);
+        exit;
     }
-
-    if (in_array($path, $publicRoutes)) {
-        return;
-    }
-
-    authorizeRoute();
 });
 
 Flight::start();
