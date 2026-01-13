@@ -35,6 +35,10 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     cvAvailable: true
   });
 
+  // api url
+  const api = process.env.VITE_API_URL;
+  const [dataApplicant, setDataApplicant] = useState([]);
+
   // Clear notification after 3 seconds
   useEffect(() => {
     if (notification) {
@@ -42,6 +46,23 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       return () => clearTimeout(timer);
     }
   }, [notification]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`${api}/applicant`);
+        const result = await response.json();
+
+        console.log('API RESULT:', result.data); // DEBUG
+        setDataApplicant(result.data); // sekarang PASTI jalan
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, [api]);
+
 
   const handleEdit = (c: Candidate) => {
     setEditingId(c.id);
@@ -69,7 +90,7 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     // In a real production app, you would use gapi.client.drive.files.create here.
     // We'll generate a dummy Drive-like link for this demonstration.
     const mockDriveUrl = `https://drive.google.com/file/d/MOCK_ID_${Math.random().toString(36).substr(2, 9)}/view`;
-    
+
     setFormData(prev => ({ ...prev, [field]: mockDriveUrl }));
     setIsUploading(prev => ({ ...prev, [field]: false }));
     showNotification(`${file.name} uploaded to Drive successfully!`);
@@ -128,18 +149,18 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     }
   };
 
-  const FileUploadField = ({ 
-    label, 
-    field, 
-    currentValue, 
-    accept, 
-    inputRef, 
-    icon 
-  }: { 
-    label: string, 
-    field: keyof Omit<Candidate, 'id'>, 
-    currentValue: string, 
-    accept: string, 
+  const FileUploadField = ({
+    label,
+    field,
+    currentValue,
+    accept,
+    inputRef,
+    icon
+  }: {
+    label: string,
+    field: keyof Omit<Candidate, 'id'>,
+    currentValue: string,
+    accept: string,
     inputRef: React.RefObject<HTMLInputElement>,
     icon: React.ReactNode
   }) => (
@@ -147,12 +168,12 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">{label}</label>
       <div className="flex items-center space-x-3">
         <div className="flex-grow relative">
-          <input 
-            type="text" 
-            value={currentValue} 
+          <input
+            type="text"
+            value={currentValue}
             readOnly
-            className="w-full p-3 pr-10 bg-gray-50 border border-gray-200 rounded-lg text-xs focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium truncate" 
-            placeholder="No file uploaded to Drive yet..." 
+            className="w-full p-3 pr-10 bg-gray-50 border border-gray-200 rounded-lg text-xs focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium truncate"
+            placeholder="No file uploaded to Drive yet..."
           />
           {currentValue && (
             <div className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500">
@@ -160,14 +181,14 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             </div>
           )}
         </div>
-        <input 
-          type="file" 
+        <input
+          type="file"
           ref={inputRef}
-          className="hidden" 
+          className="hidden"
           accept={accept}
           onChange={(e) => handleFileChange(e, field)}
         />
-        <button 
+        <button
           type="button"
           disabled={isUploading[field]}
           onClick={() => inputRef.current?.click()}
@@ -179,8 +200,8 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       </div>
       {isUploading[field] && (
         <div className="mt-2 w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
-          <div 
-            className="bg-red-600 h-full transition-all duration-300" 
+          <div
+            className="bg-red-600 h-full transition-all duration-300"
             style={{ width: `${uploadProgress[field]}%` }}
           ></div>
         </div>
@@ -192,9 +213,8 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     <div className="min-h-screen bg-gray-50 font-sans relative">
       {/* Toast Notification */}
       {notification && (
-        <div className={`fixed top-20 right-6 z-[1000] px-6 py-3 rounded-lg shadow-2xl animate-in slide-in-from-right duration-300 ${
-          notification.type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'
-        }`}>
+        <div className={`fixed top-20 right-6 z-[1000] px-6 py-3 rounded-lg shadow-2xl animate-in slide-in-from-right duration-300 ${notification.type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'
+          }`}>
           <div className="flex items-center space-x-2">
             {notification.type === 'success' ? (
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
@@ -213,9 +233,9 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
           </button>
           <h1 className="text-xl font-black uppercase tracking-widest text-blue-900">Admin Dashboard</h1>
         </div>
-        <button 
-          onClick={() => { 
-            setIsAdding(true); 
+        <button
+          onClick={() => {
+            setIsAdding(true);
             setEditingId(null);
             setFormData({
               categoryId: categories[0]?.id || 'house-keeper',
@@ -251,18 +271,18 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {candidates.length === 0 ? (
+                {dataApplicant.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="px-6 py-12 text-center text-gray-400 font-medium italic">No candidates found. Start by adding one.</td>
                   </tr>
                 ) : (
-                  candidates.map(c => (
+                  dataApplicant.map(c => (
                     <tr key={c.id} className="hover:bg-blue-50/30 transition-colors group">
                       <td className="px-6 py-4">
                         <img src={c.photoUrl} className="w-10 h-10 rounded-full object-cover border border-gray-200 shadow-sm" alt="" />
                       </td>
                       <td className="px-6 py-4">
-                        <p className="font-bold text-gray-900 leading-none mb-1">{c.nameEn}</p>
+                        <p className="font-bold text-gray-900 leading-none mb-1">{c.name}</p>
                         <p className="text-[10px] text-blue-600 font-black uppercase tracking-tight">{c.sex}, {c.age} Years Old</p>
                       </td>
                       <td className="px-6 py-4">
@@ -302,83 +322,83 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       {/* Modal for Add/Edit */}
       {(isAdding || editingId) && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-md" onClick={() => { if(!isSubmitting) { setIsAdding(false); setEditingId(null); } }}></div>
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-md" onClick={() => { if (!isSubmitting) { setIsAdding(false); setEditingId(null); } }}></div>
           <div className="relative bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in slide-in-from-bottom-8 duration-300">
             <form onSubmit={handleSubmit}>
               <div className="bg-blue-900 p-6 text-white flex justify-between items-center">
                 <h3 className="text-xl font-black uppercase tracking-widest">{editingId ? 'Edit Candidate' : 'Add New Candidate'}</h3>
                 <button type="button" onClick={() => { setIsAdding(false); setEditingId(null); }} className="text-white/60 hover:text-white transition-colors">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
               </div>
-              
+
               <div className="p-8 grid grid-cols-2 gap-6 max-h-[70vh] overflow-y-auto">
                 <div className="col-span-2">
                   <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Full Name (English) <span className="text-red-500">*</span></label>
-                  <input 
-                    type="text" 
-                    value={formData.nameEn} 
-                    onChange={e => setFormData({...formData, nameEn: e.target.value})} 
-                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium" 
+                  <input
+                    type="text"
+                    value={formData.nameEn}
+                    onChange={e => setFormData({ ...formData, nameEn: e.target.value })}
+                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium"
                     placeholder="Enter full name"
-                    required 
+                    required
                   />
                 </div>
-                
+
                 <div className="col-span-2 md:col-span-1">
                   <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Sheet / Category</label>
-                  <select 
-                    value={formData.categoryId} 
-                    onChange={e => setFormData({...formData, categoryId: e.target.value})} 
+                  <select
+                    value={formData.categoryId}
+                    onChange={e => setFormData({ ...formData, categoryId: e.target.value })}
                     className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold"
                   >
                     {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.titleEn}</option>)}
                   </select>
                 </div>
-                
+
                 <div className="col-span-2 md:col-span-1">
                   <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Age <span className="text-red-500">*</span></label>
-                  <input 
-                    type="number" 
-                    value={formData.age} 
-                    onChange={e => setFormData({...formData, age: parseInt(e.target.value) || 0})} 
-                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold" 
+                  <input
+                    type="number"
+                    value={formData.age}
+                    onChange={e => setFormData({ ...formData, age: parseInt(e.target.value) || 0 })}
+                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold"
                   />
                 </div>
-                
+
                 <div className="col-span-2 md:col-span-1">
                   <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Sex</label>
                   <div className="flex space-x-4 mt-1">
                     <label className="flex items-center space-x-2 cursor-pointer">
-                        <input type="radio" checked={formData.sex === 'Male'} onChange={() => setFormData({...formData, sex: 'Male'})} className="w-4 h-4 text-blue-600" />
-                        <span className="text-xs font-bold text-gray-700">Male</span>
+                      <input type="radio" checked={formData.sex === 'Male'} onChange={() => setFormData({ ...formData, sex: 'Male' })} className="w-4 h-4 text-blue-600" />
+                      <span className="text-xs font-bold text-gray-700">Male</span>
                     </label>
                     <label className="flex items-center space-x-2 cursor-pointer">
-                        <input type="radio" checked={formData.sex === 'Female'} onChange={() => setFormData({...formData, sex: 'Female'})} className="w-4 h-4 text-red-600" />
-                        <span className="text-xs font-bold text-gray-700">Female</span>
+                      <input type="radio" checked={formData.sex === 'Female'} onChange={() => setFormData({ ...formData, sex: 'Female' })} className="w-4 h-4 text-red-600" />
+                      <span className="text-xs font-bold text-gray-700">Female</span>
                     </label>
                   </div>
                 </div>
-                
+
                 <div className="col-span-2 md:col-span-1">
                   <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Passport Status</label>
-                  <select 
-                    value={formData.passportStatus} 
-                    onChange={e => setFormData({...formData, passportStatus: e.target.value})} 
+                  <select
+                    value={formData.passportStatus}
+                    onChange={e => setFormData({ ...formData, passportStatus: e.target.value })}
                     className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold"
                   >
                     <option value="Ready">Ready</option>
                     <option value="In Process">In Process</option>
                   </select>
                 </div>
-                
+
                 <div className="col-span-2">
                   <div className="h-px bg-gray-100 w-full my-4"></div>
                   <h4 className="text-[10px] font-black text-blue-900 uppercase tracking-widest mb-4">Drive File Uploads</h4>
                 </div>
 
                 {/* Photo Upload */}
-                <FileUploadField 
+                <FileUploadField
                   label="Photo Candidate"
                   field="photoUrl"
                   currentValue={formData.photoUrl}
@@ -388,7 +408,7 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 />
 
                 {/* CV PDF Upload */}
-                <FileUploadField 
+                <FileUploadField
                   label="CV PDF (to Drive)"
                   field="resumeUrl"
                   currentValue={formData.resumeUrl}
@@ -398,7 +418,7 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 />
 
                 {/* Video Upload */}
-                <FileUploadField 
+                <FileUploadField
                   label="Intro Video (to Drive)"
                   field="videoUrl"
                   currentValue={formData.videoUrl}
@@ -408,7 +428,7 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 />
 
                 {/* Certificate Upload */}
-                <FileUploadField 
+                <FileUploadField
                   label="Certificate PDF (to Drive)"
                   field="certificateUrl"
                   currentValue={formData.certificateUrl}
@@ -417,25 +437,25 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                   icon={<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>}
                 />
               </div>
-              
+
               <div className="p-8 bg-gray-50 flex justify-end space-x-4">
-                <button 
-                    type="button" 
-                    disabled={isSubmitting}
-                    onClick={() => { setIsAdding(false); setEditingId(null); }} 
-                    className="px-6 py-2.5 text-xs font-black text-gray-500 uppercase tracking-widest hover:text-gray-800 disabled:opacity-50"
+                <button
+                  type="button"
+                  disabled={isSubmitting}
+                  onClick={() => { setIsAdding(false); setEditingId(null); }}
+                  className="px-6 py-2.5 text-xs font-black text-gray-500 uppercase tracking-widest hover:text-gray-800 disabled:opacity-50"
                 >
-                    Cancel
+                  Cancel
                 </button>
-                <button 
-                    type="submit" 
-                    disabled={isSubmitting || Object.values(isUploading).some(Boolean)}
-                    className="bg-blue-900 text-white px-10 py-2.5 rounded-lg text-xs font-black uppercase tracking-[0.2em] hover:bg-blue-800 shadow-xl active:scale-95 disabled:opacity-70 flex items-center"
+                <button
+                  type="submit"
+                  disabled={isSubmitting || Object.values(isUploading).some(Boolean)}
+                  className="bg-blue-900 text-white px-10 py-2.5 rounded-lg text-xs font-black uppercase tracking-[0.2em] hover:bg-blue-800 shadow-xl active:scale-95 disabled:opacity-70 flex items-center"
                 >
                   {isSubmitting ? (
                     <>
-                        <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                        Saving...
+                      <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                      Saving...
                     </>
                   ) : 'Save Candidate'}
                 </button>
