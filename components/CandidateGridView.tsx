@@ -21,7 +21,7 @@ const CandidateGridView: React.FC<CandidateGridViewProps> = ({ onBack, categoryI
     <div className="min-h-screen bg-[#0b1a2a] text-white font-sans selection:bg-blue-600 pb-20">
       <header className="py-12 px-4 border-b border-blue-900/50 bg-[#0d1e2e]">
         <div className="max-w-7xl mx-auto text-center">
-          <button 
+          <button
             onClick={onBack}
             className="mb-8 group flex items-center mx-auto text-[10px] font-black uppercase tracking-[0.3em] text-blue-400 hover:text-white transition-all"
           >
@@ -30,10 +30,10 @@ const CandidateGridView: React.FC<CandidateGridViewProps> = ({ onBack, categoryI
             </svg>
             {t.backToHome}
           </button>
-          
+
           <h1 className="text-3xl md:text-4xl font-black mb-4 tracking-tight">
             <span className="text-white">
-              {language === 'EN' ? selectedCategory?.titleEn : selectedCategory?.titleTr} 
+              {language === 'EN' ? selectedCategory?.titleEn : selectedCategory?.titleTr}
             </span>
             <span className="text-white ml-2">{t.listTitle}</span>
           </h1>
@@ -77,9 +77,9 @@ const CandidateGridView: React.FC<CandidateGridViewProps> = ({ onBack, categoryI
                     <img src={candidate.photoUrl} alt={candidate.nameEn} className="w-full h-full object-cover" />
                   </div>
                   <div className="w-[40%] flex flex-col justify-center items-center py-4 space-y-8 bg-blue-900">
-                    <button 
+                    <button
                       disabled={!candidate.resumeUrl}
-                      onClick={() => setPreview({ type: 'pdf', url: candidate.resumeUrl, title: `${candidate.nameEn} - CV` })} 
+                      onClick={() => setPreview({ type: 'pdf', url: candidate.resumeUrl, title: `${candidate.nameEn} - CV` })}
                       className={`flex flex-col items-center group/btn ${!candidate.resumeUrl && 'opacity-20 cursor-not-allowed'}`}
                     >
                       <div className="p-2 mb-1 group-hover/btn:scale-110 transition-transform">
@@ -89,9 +89,9 @@ const CandidateGridView: React.FC<CandidateGridViewProps> = ({ onBack, categoryI
                       </div>
                       <span className="text-[10px] font-bold text-white tracking-widest">{t.jpCardResume}</span>
                     </button>
-                    <button 
+                    <button
                       disabled={!candidate.videoUrl}
-                      onClick={() => setPreview({ type: 'video', url: candidate.videoUrl, title: `${candidate.nameEn} - Intro Video` })} 
+                      onClick={() => setPreview({ type: 'video', url: candidate.videoUrl, title: `${candidate.nameEn} - Intro Video` })}
                       className={`flex flex-col items-center group/btn ${!candidate.videoUrl && 'opacity-20 cursor-not-allowed'}`}
                     >
                       <div className="p-2 mb-1 group-hover/btn:scale-110 transition-transform">

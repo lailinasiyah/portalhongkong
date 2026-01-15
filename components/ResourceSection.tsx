@@ -55,17 +55,22 @@ const ResourceSection: React.FC = () => {
                     </div>
 
                     {/* The Bar */}
-                    <div
-                      className="w-full max-w-[80px] bg-gradient-to-t from-red-700 to-red-500 rounded-lg shadow-md group-hover/bar:shadow-red-200 group-hover/bar:scale-105 transition-all duration-500 ease-out relative cursor-pointer"
-                      style={{ height: `${Math.max(heightPercentage, 8)}%` }}
-                    >
-                      <div className="absolute inset-0 bg-white/20 opacity-0 group-hover/bar:opacity-100 transition-opacity rounded-lg"></div>
+                    <div className="relative w-full max-w-[80px] h-full flex items-end">
+                      <div
+                        className="absolute bottom-0 w-full bg-gradient-to-t from-red-700 to-red-500 rounded-lg shadow-md
+               group-hover/bar:shadow-red-200 group-hover/bar:scale-105
+               transition-all duration-500 ease-out cursor-pointer"
+                        style={{ height: `${Math.max(heightPercentage, 8)}%` }}
+                      >
+                        <div className="absolute inset-0 bg-white/20 opacity-0 group-hover/bar:opacity-100 transition-opacity rounded-lg"></div>
 
-                      {/* Inline count for mobile */}
-                      <div className="md:hidden absolute -top-6 w-full text-center text-[10px] font-black text-red-600">
-                        {stat.count_cat}
+                        {/* Inline count for mobile */}
+                        <div className="md:hidden absolute -top-6 w-full text-center text-[10px] font-black text-red-600">
+                          {stat.count_cat}
+                        </div>
                       </div>
                     </div>
+
 
                     {/* Category name */}
                     <div className="mt-6 text-gray-900 font-black text-[10px] md:text-xs tracking-widest text-center uppercase leading-tight h-10 flex items-center justify-center">
