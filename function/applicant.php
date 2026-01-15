@@ -54,7 +54,9 @@ Flight::group('/applicant', function () use ($pdo) {
         $total = $countStmt->fetchColumn();
 
         // 📦 DATA
-        $sql = "SELECT * FROM applicant 
+        $sql = "SELECT a.*, r.name as category_name
+                FROM applicant a
+                LEFT JOIN ref_category r ON a.category_id = r.id
                 $where 
                 ORDER BY $sort $order 
                 LIMIT :limit OFFSET :offset";
@@ -63,12 +65,31 @@ Flight::group('/applicant', function () use ($pdo) {
         foreach ($params as $k => $v) {
             $stmt->bindValue($k, $v);
         }
+
+        // setelah mendapatkan data maka akan ditambhakan detail
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($data as $key => $value) {
+            $stmt = $pdo->prepare("SELECT * FROM document WHERE applicant_id = :applicant_id");
+            $stmt->bindValue(':applicant_id', $value['id'], PDO::PARAM_INT);
+            $stmt->execute();
+
+            // ekpetasi output [{typedoc: 'cv', available: true }, {typedoc: 'video', available: true }, {typedoc: 'certificate', available: true }]
+            $document = [];
+            // cek cv ada gak di $stmt
+            $document[] = ['typedoc' => 'cv', 'available' => $stmt->rowCount() > 0];
+            // cek video ada gak di $stmt
+            $document[] = ['typedoc' => 'video', 'available' => $stmt->rowCount() > 0];
+            // cek certificate ada gak di $stmt
+            $document[] = ['typedoc' => 'certificate', 'available' => $stmt->rowCount() > 0];
+
+            $data[$key]['document'] = $document;
+        }
 
         Flight::json([
-            'data' => $stmt->fetchAll(),
+            'data' => $data,
             'meta' => [
                 'page' => $page,
                 'limit' => $limit,
