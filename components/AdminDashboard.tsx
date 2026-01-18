@@ -2,9 +2,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useData } from '../DataContext';
 import { Candidate } from '../types';
+import { getApiBaseUrl } from '../utils/api';
 
 const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
-  const { candidates, categories, addCandidate, updateCandidate, deleteCandidate } = useData();
+  const [categories, setCategories] = useState([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -19,6 +20,16 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const resumeInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
   const certInputRef = useRef<HTMLInputElement>(null);
+  const passportInputRef = useRef<HTMLInputElement>(null);
+
+  const [files, setFiles] = useState<{
+    photo?: File;
+    cv?: File;
+    video?: File;
+    certificate?: File;
+    passport?: File;
+  }>({});
+
 
   // Form State
   const [formData, setFormData] = useState<Omit<Candidate, 'id'>>({
@@ -29,15 +40,70 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     resumeUrl: '',
     videoUrl: '',
     certificateUrl: '',
-    sex: 'Female',
+    passportUrl: '',
+    sex: 'F',
     age: 20,
     passportStatus: 'Ready',
     cvAvailable: true
   });
 
+  // konstanta untuk hitung umur
+  const calculateAge = (birthDate: string) => {
+    const today = new Date();
+    const birthDateObj = new Date(birthDate);
+    const age = today.getFullYear() - birthDateObj.getFullYear();
+    return age;
+  };
+
   // api url
-  const api = process.env.VITE_API_URL;
+  const api = getApiBaseUrl();
   const [dataApplicant, setDataApplicant] = useState([]);
+
+  // fetch category
+  const fetchCategory = async () => {
+    try {
+      const response = await fetch(`${api}/ref/category`);
+      const result = await response.json();
+      console.log('API RESULT:', result.data); // DEBUG
+      setCategories(result.data); // sekarang PASTI jalan
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  // fetch data
+  const fetchData = async () => {
+    try {
+      const response = await fetch(`${api}/applicant`);
+      const result = await response.json();
+
+      console.log('API RESULT:', result.data); // DEBUG
+      setDataApplicant(result.data); // sekarang PASTI jalan
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  // add data
+  const addData = async () => {
+    const response = await fetch(`${api}/applicant`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: formData.nameEn,
+        category_id: formData.categoryId,
+        birth_date: formData.birthDate,
+        sex: formData.sex,
+        created_by: 1
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create applicant');
+    }
+
+    return response.json(); // 🔥 WAJIB RETURN
+  };
 
   // Clear notification after 3 seconds
   useEffect(() => {
@@ -48,20 +114,11 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   }, [notification]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(`${api}/applicant`);
-        const result = await response.json();
-
-        console.log('API RESULT:', result.data); // DEBUG
-        setDataApplicant(result.data); // sekarang PASTI jalan
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
     fetchData();
+    fetchCategory();
   }, [api]);
+
+
 
 
   const handleEdit = (c: Candidate) => {
@@ -74,80 +131,108 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     setNotification({ message, type });
   };
 
-  // Simulated Google Drive Upload Function
-  const simulateFileUpload = async (file: File, field: keyof Omit<Candidate, 'id'>) => {
-    setIsUploading(prev => ({ ...prev, [field]: true }));
-    setUploadProgress(prev => ({ ...prev, [field]: 0 }));
 
-    // Simulation of progress
-    const totalSteps = 20;
-    for (let i = 1; i <= totalSteps; i++) {
-      await new Promise(resolve => setTimeout(resolve, 150 + Math.random() * 200));
-      const progress = Math.round((i / totalSteps) * 100);
-      setUploadProgress(prev => ({ ...prev, [field]: progress }));
-    }
 
-    // In a real production app, you would use gapi.client.drive.files.create here.
-    // We'll generate a dummy Drive-like link for this demonstration.
-    const mockDriveUrl = `https://drive.google.com/file/d/MOCK_ID_${Math.random().toString(36).substr(2, 9)}/view`;
-
-    setFormData(prev => ({ ...prev, [field]: mockDriveUrl }));
-    setIsUploading(prev => ({ ...prev, [field]: false }));
-    showNotification(`${file.name} uploaded to Drive successfully!`);
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: keyof Omit<Candidate, 'id'>) => {
+  const handleFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    type: 'photo' | 'cv' | 'video' | 'certificate'
+  ) => {
     const file = e.target.files?.[0];
     if (file) {
-      simulateFileUpload(file, field);
+      setFiles(prev => ({ ...prev, [type]: file }));
     }
   };
+
 
   const validateForm = (): boolean => {
     if (!formData.nameEn.trim()) {
       showNotification('Name is required', 'error');
       return false;
     }
-    if (formData.age < 15 || formData.age > 60) {
-      showNotification('Age must be between 15 and 60', 'error');
-      return false;
-    }
     return true;
   };
 
+  const uploadDocument = async (
+    applicantId: number,
+    type: string,
+    file: File
+  ) => {
+    const form = new FormData();
+    form.append('file', file);
+    form.append('applicant_id', applicantId.toString());
+    form.append('type', type);
+
+    const res = await fetch(`${api}/document`, {
+      method: 'POST',
+      body: form
+    });
+
+    if (!res.ok) {
+      throw new Error(`Upload ${type} failed`);
+    }
+  };
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) return;
 
     setIsSubmitting(true);
     try {
-      const finalData = {
-        ...formData,
-        nameLocal: formData.nameLocal || formData.nameEn
-      };
+      // 1️⃣ CREATE APPLICANT
+      const result = await addData();
+      const applicantId = result.id;
 
-      if (editingId) {
-        await updateCandidate(editingId, finalData);
-        showNotification('Candidate updated successfully!');
-        setEditingId(null);
-      } else {
-        await addCandidate(finalData);
-        showNotification('New candidate added successfully!');
-        setIsAdding(false);
-      }
+      // 2️⃣ UPLOAD FILE SATU-SATU
+      if (files.photo)
+        await uploadDocument(applicantId, 'photo', files.photo);
+
+      if (files.cv)
+        await uploadDocument(applicantId, 'cv', files.cv);
+
+      if (files.video)
+        await uploadDocument(applicantId, 'video', files.video);
+
+      if (files.certificate)
+        await uploadDocument(applicantId, 'certificate', files.certificate);
+
+      showNotification('Candidate & documents saved!');
+      await fetchData();
+
     } catch (err) {
-      showNotification('Failed to save data. Please try again.', 'error');
+      console.error(err);
+      showNotification('Upload failed', 'error');
     } finally {
       setIsSubmitting(false);
     }
   };
 
+
   const handleDelete = async (id: string, name: string) => {
-    if (window.confirm(`Are you sure you want to delete ${name}?`)) {
-      await deleteCandidate(id);
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete "${name}"?`
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      const response = await fetch(`${api}/applicant/${id}`, {
+        method: 'DELETE',
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Delete failed');
+      }
+
       showNotification('Candidate deleted successfully!');
+      await fetchData(); // 🔥 REFRESH DATA
+    } catch (error) {
+      console.error(error);
+      showNotification('Failed to delete candidate', 'error');
     }
   };
+
 
   const FileUploadField = ({
     label,
@@ -279,36 +364,45 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                   dataApplicant.map(c => (
                     <tr key={c.id} className="hover:bg-blue-50/30 transition-colors group">
                       <td className="px-6 py-4">
-                        <img src={c.photoUrl} className="w-10 h-10 rounded-full object-cover border border-gray-200 shadow-sm" alt="" />
+                        <img
+                          src={
+                            c.document?.photo?.available
+                              ? `${api}/document${c.document.photo.file_path}`
+                              : "https://via.placeholder.com/40"
+                          }
+                          className="w-10 h-10 rounded-full object-cover border border-gray-200 shadow-sm"
+                          alt=""
+                        />
+
                       </td>
                       <td className="px-6 py-4">
                         <p className="font-bold text-gray-900 leading-none mb-1">{c.name}</p>
-                        <p className="text-[10px] text-blue-600 font-black uppercase tracking-tight">{c.sex}, {c.age} Years Old</p>
+                        <p className="text-[10px] text-blue-600 font-black uppercase tracking-tight">{c.sex}, {calculateAge(c.birth_date)} Years Old</p>
                       </td>
                       <td className="px-6 py-4">
                         <span className="text-[10px] font-black bg-gray-100 text-gray-600 px-2 py-1 rounded uppercase tracking-widest">
-                          {categories.find(cat => cat.id === c.categoryId)?.titleEn || c.categoryId}
+                          {c.category_name}
                         </span>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex space-x-3">
                           <div className="flex flex-col items-center">
-                            <span className={`w-2.5 h-2.5 rounded-full mb-1 ${c.resumeUrl ? 'bg-green-500' : 'bg-gray-200'}`}></span>
+                            <span className={`w-2.5 h-2.5 rounded-full mb-1 ${c.document?.cv?.available ? 'bg-green-500' : 'bg-gray-200'}`}></span>
                             <span className="text-[8px] font-bold text-gray-400 uppercase">CV</span>
                           </div>
                           <div className="flex flex-col items-center">
-                            <span className={`w-2.5 h-2.5 rounded-full mb-1 ${c.videoUrl ? 'bg-blue-500' : 'bg-gray-200'}`}></span>
+                            <span className={`w-2.5 h-2.5 rounded-full mb-1 ${c.document?.video?.available ? 'bg-blue-500' : 'bg-gray-200'}`}></span>
                             <span className="text-[8px] font-bold text-gray-400 uppercase">VID</span>
                           </div>
                           <div className="flex flex-col items-center">
-                            <span className={`w-2.5 h-2.5 rounded-full mb-1 ${c.certificateUrl ? 'bg-yellow-500' : 'bg-gray-200'}`}></span>
+                            <span className={`w-2.5 h-2.5 rounded-full mb-1 ${c.document?.certificate?.available ? 'bg-yellow-500' : 'bg-gray-200'}`}></span>
                             <span className="text-[8px] font-bold text-gray-400 uppercase">CERT</span>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 text-right space-x-4">
                         <button onClick={() => handleEdit(c)} className="text-blue-600 font-bold text-[10px] uppercase tracking-widest hover:text-blue-800 underline-offset-4 hover:underline">Edit</button>
-                        <button onClick={() => handleDelete(c.id, c.nameEn)} className="text-red-600 font-bold text-[10px] uppercase tracking-widest hover:text-red-800 underline-offset-4 hover:underline">Delete</button>
+                        <button onClick={() => handleDelete(c.id, c.name)} className="text-red-600 font-bold text-[10px] uppercase tracking-widest hover:text-red-800 underline-offset-4 hover:underline">Delete</button>
                       </td>
                     </tr>
                   ))
@@ -352,16 +446,16 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                     onChange={e => setFormData({ ...formData, categoryId: e.target.value })}
                     className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold"
                   >
-                    {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.titleEn}</option>)}
+                    {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
                   </select>
                 </div>
 
                 <div className="col-span-2 md:col-span-1">
-                  <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Age <span className="text-red-500">*</span></label>
+                  <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Birth Date <span className="text-red-500">*</span></label>
                   <input
-                    type="number"
-                    value={formData.age}
-                    onChange={e => setFormData({ ...formData, age: parseInt(e.target.value) || 0 })}
+                    type="date"
+                    value={formData.birthDate}
+                    onChange={e => setFormData({ ...formData, birthDate: e.target.value })}
                     className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold"
                   />
                 </div>
@@ -370,26 +464,14 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                   <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Sex</label>
                   <div className="flex space-x-4 mt-1">
                     <label className="flex items-center space-x-2 cursor-pointer">
-                      <input type="radio" checked={formData.sex === 'Male'} onChange={() => setFormData({ ...formData, sex: 'Male' })} className="w-4 h-4 text-blue-600" />
+                      <input type="radio" checked={formData.sex === 'M'} onChange={() => setFormData({ ...formData, sex: 'M' })} className="w-4 h-4 text-blue-600" />
                       <span className="text-xs font-bold text-gray-700">Male</span>
                     </label>
                     <label className="flex items-center space-x-2 cursor-pointer">
-                      <input type="radio" checked={formData.sex === 'Female'} onChange={() => setFormData({ ...formData, sex: 'Female' })} className="w-4 h-4 text-red-600" />
+                      <input type="radio" checked={formData.sex === 'F'} onChange={() => setFormData({ ...formData, sex: 'F' })} className="w-4 h-4 text-red-600" />
                       <span className="text-xs font-bold text-gray-700">Female</span>
                     </label>
                   </div>
-                </div>
-
-                <div className="col-span-2 md:col-span-1">
-                  <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Passport Status</label>
-                  <select
-                    value={formData.passportStatus}
-                    onChange={e => setFormData({ ...formData, passportStatus: e.target.value })}
-                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold"
-                  >
-                    <option value="Ready">Ready</option>
-                    <option value="In Process">In Process</option>
-                  </select>
                 </div>
 
                 <div className="col-span-2">
@@ -404,6 +486,16 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                   currentValue={formData.photoUrl}
                   accept="image/*"
                   inputRef={photoInputRef}
+                  icon={<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>}
+                />
+
+                {/* Passport Upload */}
+                <FileUploadField
+                  label="Passport Candidate"
+                  field="passportUrl"
+                  currentValue={formData.passportUrl}
+                  accept="image/*"
+                  inputRef={passportInputRef}
                   icon={<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>}
                 />
 

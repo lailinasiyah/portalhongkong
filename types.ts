@@ -21,7 +21,8 @@ export interface Candidate {
   resumeUrl: string;
   videoUrl: string;
   certificateUrl: string;
-  sex: 'Male' | 'Female';
+  passportUrl: string;
+  sex: 'M' | 'F';
   age: number;
   passportStatus: string;
   cvAvailable: boolean;

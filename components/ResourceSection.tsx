@@ -2,12 +2,13 @@
 import React, { useEffect, useState } from 'react';
 import { useData } from '../DataContext';
 import { useLanguage } from '../LanguageContext';
+import { getApiBaseUrl } from '../utils/api';
 
 const ResourceSection: React.FC = () => {
   const { t, language } = useLanguage();
 
   // call api using use effect
-  const api = process.env.VITE_API_URL;
+  const api = getApiBaseUrl();
   const [data, setData] = useState<any>([]);
 
   useEffect(() => {

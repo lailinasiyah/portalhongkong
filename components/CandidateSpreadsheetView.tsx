@@ -4,6 +4,7 @@ import { useData } from '../DataContext';
 import { useAuth } from '../AuthContext';
 import { Candidate } from '../types';
 import PreviewModal from './PreviewModal';
+import { getApiBaseUrl } from '../utils/api';
 
 interface CandidateSpreadsheetViewProps {
   onBack: () => void;
@@ -26,10 +27,29 @@ const CandidateSpreadsheetView: React.FC<CandidateSpreadsheetViewProps> = ({
     url: string;
     title: string;
   } | null>(null);
-  const [waCandidate, setWaCandidate] = useState<Candidate | null>(null);
+
+  // fungsi unutk menhitung umur dari yyyy-mm-dd
+  const calculateAge = (birthDate: string) => {
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const month = today.getMonth() - birth.getMonth();
+    if (month < 0 || (month === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    return age;
+  };
+
+  // helper getdoc
+  const getDoc = (candidate: any, type: string) =>
+    candidate.document?.find((d: any) => d.typedoc === type); const buildPreviewUrl = (filePath: string) => {
+      const api = process.env.VITE_API_URL;
+      return `${api}/document${filePath}`;
+    };
+
 
   const isAdmin = isAuthenticated && user?.role === 'admin';
-  const api = process.env.VITE_API_URL;
+  const api = getApiBaseUrl();
 
   /* ===================== FETCH CATEGORY ===================== */
   useEffect(() => {
@@ -89,6 +109,7 @@ const CandidateSpreadsheetView: React.FC<CandidateSpreadsheetViewProps> = ({
   const filteredCandidates = listCandidates;
 
   const openWhatsApp = (number: string, candidateName: string) => {
+    if (!number) return;
     const message = t.waMessageTemplate.replace('{name}', candidateName);
     const encodedMessage = encodeURIComponent(message);
     const cleanNumber = number.replace(/[^0-9]/g, '');
@@ -96,7 +117,6 @@ const CandidateSpreadsheetView: React.FC<CandidateSpreadsheetViewProps> = ({
       `https://wa.me/${cleanNumber}?text=${encodedMessage}`,
       '_blank'
     );
-    setWaCandidate(null);
   };
 
   const handleAddSheet = () => {
@@ -161,43 +181,55 @@ const CandidateSpreadsheetView: React.FC<CandidateSpreadsheetViewProps> = ({
                 <td className="border px-4">{i + 1}</td>
                 <td className="border px-4 font-bold">{c.name}</td>
                 <td className="border px-4">{c.sex}</td>
-                <td className="border px-4">{c.birth_date}</td>
+                <td className="border px-4">{calculateAge(c.birth_date)}</td>
                 <td className="border border-gray-300 px-4 py-2">
-                  {c.passportStatus === 'Ready' ? (
+                  {c.document?.passport?.available ? (
                     <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-tight bg-blue-100 text-blue-600`}>
-                      {t.passportReady}
+                      Siap
                     </span>
                   ) : (
                     <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-tight bg-yellow-100 text-yellow-700`}>
-                      {t.passportProcess}
+                      Belum
                     </span>
                   )}
                 </td>
                 <td className="border border-gray-300 px-4 py-2 text-center">
-                  {c.resumeUrl ? (
+                  {c.document?.cv?.available ? (
                     <button
-                      onClick={() => setPreview({ type: 'pdf', url: c.resumeUrl, title: `${c.name} - CV` })}
+                      onClick={() => setPreview({
+                        type: 'pdf',
+                        url: buildPreviewUrl(c.document.cv.file_path),
+                        title: `${c.name} - CV`
+                      })}
+
                       className="p-1.5 bg-gray-100 hover:bg-blue-600 text-gray-400 hover:text-white rounded transition-all shadow-sm"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                       </svg>
+                      <span className="ml-1">Siap</span>
                     </button>
                   ) : <span className="text-gray-300">
-
+                    Belum
                   </span>}
                 </td>
                 <td className="border border-gray-300 px-4 py-2 text-center">
-                  {c.videoUrl ? (
+                  {c.document?.video?.available ? (
                     <button
-                      onClick={() => setPreview({ type: 'video', url: candidate.videoUrl, title: `${candidate.nameEn} - Video Preview` })}
+                      onClick={() => setPreview({
+                        type: 'video',
+                        url: buildPreviewUrl(c.document.video.file_path),
+                        title: `${c.name} - Video Preview`
+                      })}
+
                       className="p-1.5 bg-gray-100 hover:bg-red-600 text-gray-400 hover:text-white rounded transition-all shadow-sm"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                       </svg>
+                      <span className="ml-1">Siap</span>
                     </button>
-                  ) : <span className="text-gray-300">-</span>}
+                  ) : <span className="text-gray-300">Belum</span>}
                 </td>
                 <td className="border border-gray-300 px-4 py-2 text-center">
                   {isAdmin ? (
@@ -218,9 +250,10 @@ const CandidateSpreadsheetView: React.FC<CandidateSpreadsheetViewProps> = ({
                 </td>
                 <td className="border border-gray-300 px-4 py-2 text-right">
                   <button
-                    onClick={() => setWaCandidate(c)}
+                    onClick={() => openWhatsApp(c.phone, c.name)}
                     className="p-2 bg-green-500 hover:bg-green-600 text-white rounded transition-all shadow-md active:scale-95"
                   >
+
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
                     </svg>
