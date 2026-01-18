@@ -4,6 +4,8 @@ CREATE TABLE IF NOT EXISTS applicant (
     category_id INT NOT NULL,
     birth_date DATE NULL,
     sex ENUM('M','F') NULL,
+    phone VARCHAR(20) NULL,
+    email VARCHAR(100) NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NULL,
     created_by INT NULL

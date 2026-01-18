@@ -11,7 +11,7 @@
  Target Server Version : 100432 (10.4.32-MariaDB)
  File Encoding         : 65001
 
- Date: 15/01/2026 07:18:46
+ Date: 19/01/2026 06:34:37
 */
 
 SET NAMES utf8mb4;
@@ -30,16 +30,18 @@ CREATE TABLE `applicant`  (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp,
   `updated_at` timestamp NULL DEFAULT NULL,
   `created_by` int NULL DEFAULT NULL,
+  `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of applicant
 -- ----------------------------
-INSERT INTO `applicant` VALUES (1, 'Andi Wijaya', 1, '1998-04-12', 'M', '2026-01-12 19:09:57', NULL, 99);
-INSERT INTO `applicant` VALUES (2, 'Andi Prasetyo', 2, '1997-04-12', 'M', '2026-01-13 20:57:57', NULL, 99);
-INSERT INTO `applicant` VALUES (3, 'Edgar Wicaksono', 2, '1997-04-12', 'M', '2026-01-13 21:08:03', NULL, 99);
-INSERT INTO `applicant` VALUES (4, 'Den Gudartama', 3, '1999-03-12', 'M', '2026-01-13 21:59:32', NULL, 99);
+INSERT INTO `applicant` VALUES (1, 'Andi Wijaya', 1, '1998-04-12', 'M', '2026-01-12 19:09:57', NULL, 99, '019', '1@1.com');
+INSERT INTO `applicant` VALUES (2, 'Andi Prasetyo', 2, '1997-04-12', 'M', '2026-01-13 20:57:57', NULL, 99, NULL, NULL);
+INSERT INTO `applicant` VALUES (4, 'Den Gudartama', 3, '1999-03-12', 'M', '2026-01-13 21:59:32', NULL, 99, NULL, NULL);
+INSERT INTO `applicant` VALUES (6, 'wwqwq', 3, '1999-01-19', 'M', '2026-01-19 06:32:54', NULL, 1, NULL, NULL);
 
 -- ----------------------------
 -- Table structure for document
@@ -56,13 +58,14 @@ CREATE TABLE `document`  (
   UNIQUE INDEX `uniq_applicant_type`(`applicant_id` ASC, `type` ASC) USING BTREE,
   INDEX `applicant_id`(`applicant_id` ASC) USING BTREE,
   CONSTRAINT `document_ibfk_1` FOREIGN KEY (`applicant_id`) REFERENCES `applicant` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of document
 -- ----------------------------
 INSERT INTO `document` VALUES (3, 1, 'cv', '/1/cv/6965078f0b6df_3507081703990002_kartuUjianSkb (7).pdf', '2026-01-12 21:39:11', NULL);
 INSERT INTO `document` VALUES (4, 1, 'certificate', '/1/certificate/696507e455a27_CV - LAILIN NUR ASIYAH1.pdf', '2026-01-12 21:40:36', NULL);
+INSERT INTO `document` VALUES (5, 1, 'photo', '/1/photo/696cea3a8dad8_download (4).jpg', '2026-01-18 21:12:10', NULL);
 
 -- ----------------------------
 -- Table structure for member

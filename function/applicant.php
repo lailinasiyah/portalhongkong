@@ -72,21 +72,58 @@ Flight::group('/applicant', function () use ($pdo) {
         $stmt->execute();
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         foreach ($data as $key => $value) {
-            $stmt = $pdo->prepare("SELECT * FROM document WHERE applicant_id = :applicant_id");
+            $stmt = $pdo->prepare("
+                SELECT type, file_path
+                FROM document
+                WHERE applicant_id = :applicant_id
+            ");
             $stmt->bindValue(':applicant_id', $value['id'], PDO::PARAM_INT);
             $stmt->execute();
 
-            // ekpetasi output [{typedoc: 'cv', available: true }, {typedoc: 'video', available: true }, {typedoc: 'certificate', available: true }]
-            $document = [];
-            // cek cv ada gak di $stmt
-            $document[] = ['typedoc' => 'cv', 'available' => $stmt->rowCount() > 0];
-            // cek video ada gak di $stmt
-            $document[] = ['typedoc' => 'video', 'available' => $stmt->rowCount() > 0];
-            // cek certificate ada gak di $stmt
-            $document[] = ['typedoc' => 'certificate', 'available' => $stmt->rowCount() > 0];
+            $docs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // default object (biar key selalu ada)
+            $document = [
+                'photo' => [
+                    'typedoc'   => 'photo',
+                    'available' => false,
+                    'file_path' => null
+                ],
+                'passport' => [
+                    'typedoc'   => 'passport',
+                    'available' => false,
+                    'file_path' => null
+                ],
+                'cv' => [
+                    'typedoc'   => 'cv',
+                    'available' => false,
+                    'file_path' => null
+                ],
+                'video' => [
+                    'typedoc'   => 'video',
+                    'available' => false,
+                    'file_path' => null
+                ],
+                'certificate' => [
+                    'typedoc'   => 'certificate',
+                    'available' => false,
+                    'file_path' => null
+                ],
+            ];
+
+            // isi data jika ada di DB
+            foreach ($docs as $doc) {
+                if (isset($document[$doc['type']])) {
+                    $document[$doc['type']]['available'] = true;
+                    $document[$doc['type']]['file_path'] = $doc['file_path'];
+                }
+            }
 
             $data[$key]['document'] = $document;
         }
+
+
+
 
         Flight::json([
             'data' => $data,

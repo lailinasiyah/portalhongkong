@@ -305,4 +305,62 @@ Flight::group('/document', function () {
         }
     });
 
+    /**
+     * ==================================================
+     * PREVIEW FILE BY PATH
+     * GET /document/:applicant_id/:type/:filename
+     * ==================================================
+     */
+    Flight::route('GET /@applicant_id/@type/@filename', function ($applicant_id, $type, $filename) {
+
+        $storage = Flight::get('storage_path');
+
+        // 🔒 allow type whitelist
+        $allowedTypes = Flight::get('document_types');
+        if (!in_array($type, $allowedTypes, true)) {
+            Flight::halt(404, 'Invalid document type');
+        }
+
+        // 🔒 sanitize filename
+        $filename = basename($filename);
+
+        $fullPath = realpath("$storage/$applicant_id/$type/$filename");
+
+        // 🔐 SECURITY CHECK
+        if (
+            !$fullPath ||
+            !file_exists($fullPath) ||
+            strpos($fullPath, realpath($storage)) !== 0
+        ) {
+            Flight::halt(404, 'File not found');
+        }
+
+        $ext = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
+
+        // 🧠 MIME MAP
+        $mimeMap = [
+            'pdf'  => 'application/pdf',
+            'jpg'  => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png'  => 'image/png',
+            'gif'  => 'image/gif',
+            'webp' => 'image/webp',
+            'mp4'  => 'video/mp4',
+            'webm' => 'video/webm',
+            'ogg'  => 'video/ogg',
+        ];
+
+        $mime = $mimeMap[$ext] ?? 'application/octet-stream';
+
+        // 🧾 HEADERS
+        header('Content-Type: ' . $mime);
+        header('Content-Length: ' . filesize($fullPath));
+        header('Content-Disposition: inline; filename="' . $filename . '"');
+        header('Accept-Ranges: bytes');
+
+        readfile($fullPath);
+        exit;
+    });
+
+
 });
