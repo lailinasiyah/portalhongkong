@@ -1,12 +1,64 @@
 <?php
 
+header('X-TEST-CORS: MASUK');
+header("Access-Control-Allow-Credentials: true");
+
 require 'vendor/autoload.php';
 
+
 session_start();
+
+// // ===== GLOBAL CORS (WAJIB PALING ATAS) =====
+//     Flight::before('start', function () {
+//     header("Access-Control-Allow-Origin: http://localhost:3000");
+//     header("Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS");
+//     header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+//     header("Access-Control-Allow-Credentials: true");
+//     header("Content-Type: application/json; charset=UTF-8");
+
+//     if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+//         http_response_code(200);
+//         exit;
+//     }
+// });
+
+// // ==========================================
+
+// =====================
+// CORS CONFIG
+
+Flight::before('start', function () {
+    $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+
+    if (
+        $origin === 'http://localhost:3000' ||
+        preg_match('#^http://192\.168\.\d+\.\d+:3000$#', $origin)
+    ) {
+        header("Access-Control-Allow-Origin: $origin");
+    }
+
+    header("Access-Control-Allow-Credentials: true");
+    header("Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS");
+    header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+    header("Content-Type: application/json; charset=UTF-8");
+
+    if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+        http_response_code(200);
+        exit;
+    }
+});
+
+
+
+
+// =====================
+
+
+
 /**
  * start config db
  */
-$configPath = __DIR__ . './config.json';
+$configPath = __DIR__ . '/config.json';
 if (!file_exists($configPath)) {
     die('Config file not found');
 }
@@ -111,29 +163,6 @@ require 'function/refcategory.php';
 //     authorizeRoute();
 // });
 
-// =====================
-// CORS CONFIG
-// =====================
-Flight::before('start', function () {
-
-    $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-
-    if (
-        preg_match('#^http://(localhost|127\.0\.0\.1):\d+$#', $origin) ||
-        preg_match('#^http://192\.168\.\d+\.\d+:\d+$#', $origin)
-    ) {
-        header("Access-Control-Allow-Origin: $origin");
-        header("Access-Control-Allow-Credentials: true");
-    }
-
-    header("Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS");
-    header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
-
-    if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-        http_response_code(200);
-        exit;
-    }
-});
 
 
 Flight::start();
