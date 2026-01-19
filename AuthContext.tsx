@@ -1,70 +1,75 @@
+import React, { createContext, useContext, useState } from 'react';
+import { getApiBaseUrl } from './utils/api';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User } from './types';
+export interface User {
+  id: number;
+  username: string;
+  role: 'admin' | 'user';
+}
 
 interface AuthContextType {
   user: User | null;
   login: (username: string, password: string) => Promise<boolean>;
-  logout: () => void;
+  logout: () => Promise<void>;
   isAuthenticated: boolean;
   isAdmin: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Definisi User Lists berdasarkan permintaan
-const ADMIN_USERS = ['alivia', 'rani', 'lailin'];
-const VISITOR_USERS = ['agency', 'victor', 'wesley', 'daia', 'dewe', 'elis', 'atik', 'indah'];
-
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(() => {
-    const saved = localStorage.getItem('mss_auth_user');
-    return saved ? JSON.parse(saved) : null;
-  });
+  const [user, setUser] = useState<User | null>(null);
 
   const login = async (username: string, password: string): Promise<boolean> => {
-    // Simulasi delay keamanan
-    await new Promise(r => setTimeout(r, 800));
-    
-    const lowerUsername = username.toLowerCase();
-    
-    // Validasi Password Spesifik: password harus sama dengan username + '123'
-    if (password !== lowerUsername + '123') return false;
+    try {
+      const res = await fetch(`${getApiBaseUrl()}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include', // 🔥 WAJIB UNTUK SESSION
+        body: JSON.stringify({ username, password })
+      });
 
-    let role: 'admin' | 'user' | null = null;
+      if (!res.ok) return false;
 
-    if (ADMIN_USERS.includes(lowerUsername)) {
-      role = 'admin';
-    } else if (VISITOR_USERS.includes(lowerUsername)) {
-      role = 'user';
-    }
-
-    if (role) {
-      const newUser: User = { username: lowerUsername, role };
-      setUser(newUser);
-      localStorage.setItem('mss_auth_user', JSON.stringify(newUser));
+      const data = await res.json();
+      setUser(data.user);
       return true;
+    } catch (e) {
+      console.error('Login error', e);
+      return false;
     }
-    
-    return false;
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await fetch(`${getApiBaseUrl()}/auth/logout`, {
+      method: 'POST',
+      credentials: 'include'
+    });
+
     setUser(null);
-    localStorage.removeItem('mss_auth_user');
   };
 
   const isAdmin = user?.role === 'admin';
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user, isAdmin }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        login,
+        logout,
+        isAuthenticated: !!user,
+        isAdmin
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 };
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) throw new Error('useAuth must be used within an AuthProvider');
-  return context;
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+  return ctx;
 };

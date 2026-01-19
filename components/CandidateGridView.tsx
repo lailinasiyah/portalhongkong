@@ -4,6 +4,7 @@ import { useLanguage } from '../LanguageContext';
 import { useData } from '../DataContext';
 import PreviewModal from './PreviewModal';
 
+
 interface CandidateGridViewProps {
   onBack: () => void;
   categoryId: string | null;
