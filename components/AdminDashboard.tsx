@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useData } from '../DataContext';
-import { Candidate } from '../types';
+import { Candidate,CandidateApi } from '../types';
 import { getApiBaseUrl } from '../utils/api';
 
 const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
@@ -22,21 +22,35 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const certInputRef = useRef<HTMLInputElement>(null);
   const passportInputRef = useRef<HTMLInputElement>(null);
 
-  const [files, setFiles] = useState<{
-    photo?: File;
-    cv?: File;
-    video?: File;
-    certificate?: File;
-    passport?: File;
-  }>({});
+  // const [files, setFiles] = useState<{
+  //   photo?: File;
+  //   cv?: File;
+  //   video?: File;
+  //   certificate?: File;
+  //   passport?: File;
+  // }>({});
 
+  //Perbaikan kode buat ubah files state 20260120
+
+  type FileType = 'photo' | 'cv' | 'video' | 'certificate' | 'passport';
+
+
+    const [files, setFiles] = useState<Record<FileType, File | undefined>>({
+      photo: undefined,
+      cv: undefined,
+      video: undefined,
+      certificate: undefined,
+      passport: undefined,
+    });
+
+  ///////////////////////////////////////
 
   // Form State
   const [formData, setFormData] = useState<Omit<Candidate, 'id'>>({
     categoryId: categories[0]?.id || 'house-keeper',
     nameEn: '',
     nameLocal: '',
-    photoUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400&h=500&fit=crop',
+    photoUrl: '',
     resumeUrl: '',
     videoUrl: '',
     certificateUrl: '',
@@ -121,28 +135,112 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
 
 
-  const handleEdit = (c: Candidate) => {
-    setEditingId(c.id);
-    setFormData(c);
-    setIsAdding(false);
-  };
+  // const handleEdit = (c: Candidate) => {
+  //   setEditingId(c.id);
+  //   setFormData(c);
+  //   setIsAdding(false);
+  // };
 
+  //Fixing handle edit 20260120
+
+  const handleEdit = (c: CandidateApi) => {
+  setEditingId(c.id);
+
+  setFormData({
+    categoryId: c.category_id, // ✅ SEKARANG VALID
+    nameEn: c.name,
+    nameLocal: c.name_local || '',
+    photoUrl: c.document?.photo?.file_path
+      ? `${api}/document${c.document.photo.file_path}`
+      : '',
+    resumeUrl: c.document?.cv?.file_path
+      ? `${api}/document${c.document.cv.file_path}`
+      : '',
+    videoUrl: c.document?.video?.file_path
+      ? `${api}/document${c.document.video.file_path}`
+      : '',
+    certificateUrl: c.document?.certificate?.file_path
+      ? `${api}/document${c.document.certificate.file_path}`
+      : '',
+    passportUrl: c.document?.passport?.file_path
+      ? `${api}/document${c.document.passport.file_path}`
+      : '',
+    sex: c.sex,
+    age: calculateAge(c.birth_date),
+    passportStatus: c.passport_status,
+    cvAvailable: c.document?.cv?.available ?? false,
+    birthDate: c.birth_date.slice(0, 10),
+  });
+
+  setFiles({
+    photo: undefined,
+    cv: undefined,
+    video: undefined,
+    certificate: undefined,
+    passport: undefined,
+  });
+
+  setIsAdding(false);
+};
+
+    const fileUrlMap: Record<FileType, keyof typeof formData> = {
+      photo: 'photoUrl',
+      cv: 'resumeUrl',
+      video: 'videoUrl',
+      certificate: 'certificateUrl',
+      passport: 'passportUrl',
+    };
+
+
+
+  
+  //
   const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
     setNotification({ message, type });
   };
 
 
 
-  const handleFileChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    type: 'photo' | 'cv' | 'video' | 'certificate'
-  ) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setFiles(prev => ({ ...prev, [type]: file }));
-    }
-  };
+  // const handleFileChange = (
+  //   e: React.ChangeEvent<HTMLInputElement>,
+  //   type: 'photo' | 'cv' | 'video' | 'certificate' | 'passport'
+    
+  // ) => {
+  //   const file = e.target.files?.[0];
+  //   if (file) {
+  //     setFiles(prev => ({ ...prev, [type]: file }));
+  //   }
+  // };  
 
+
+  //Ubah handleFileChange 20262001
+
+      const handleFileChange = (
+        e: React.ChangeEvent<HTMLInputElement>,
+        type: FileType
+      ) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // 1️⃣ simpan file
+        setFiles(prev => ({ ...prev, [type]: file }));
+
+        // 2️⃣ tampilkan nama file / preview di text field
+        const preview =
+          type === 'photo' || type === 'passport'
+            ? URL.createObjectURL(file) // image preview
+            : file.name; // text preview
+
+        const key = fileUrlMap[type];
+
+        setFormData(prev => ({
+          ...prev,
+          [key]: preview,
+        }));
+      };
+
+
+  //
 
   const validateForm = (): boolean => {
     if (!formData.nameEn.trim()) {
@@ -172,15 +270,83 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     }
   };
 
+  const updateApplicant = async (
+  id: string,
+  data: Omit<Candidate, 'id'>
+) => {
+  const response = await fetch(`${api}/applicant/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      name: data.nameEn,
+      category_id: data.categoryId,
+      birth_date: data.birthDate,
+      sex: data.sex,
+      passport_status: data.passportStatus,
+      updated_by: 1,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to update applicant');
+  }
+
+  return response.json();
+};
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     setIsSubmitting(true);
     try {
-      // 1️⃣ CREATE APPLICANT
-      const result = await addData();
-      const applicantId = result.id;
+        
+      
+   
+      // let applicantId = result.id;
+        let applicantId = editingId;
+          // 🔥 CREATE
+        if (!editingId) {
+          const result = await addData();
+          applicantId = result.id;
+        }
+
+       // 🔥 UPDATE DATA (OPTIONAL)
+        if (editingId) {
+          await updateApplicant(editingId, formData);
+        }
+
+                // 🔥 AUTO CLOSE MODAL
+        setIsAdding(false);
+        setEditingId(null);
+
+        // (opsional) reset form
+        setFormData({
+          categoryId: categories[0]?.id || 'house-keeper',
+          nameEn: '',
+          nameLocal: '',
+          photoUrl: '',
+          resumeUrl: '',
+          videoUrl: '',
+          certificateUrl: '',
+          passportUrl: '',
+          sex: '',
+          age: '',
+          passportStatus: 'Ready',
+          cvAvailable: true,
+          birthDate: '',
+        });
+
+        setFiles({
+          photo: undefined,
+          cv: undefined,
+          video: undefined,
+          certificate: undefined,
+          passport: undefined,
+        });
+
+
 
       // 2️⃣ UPLOAD FILE SATU-SATU
       if (files.photo)
@@ -191,6 +357,9 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
       if (files.video)
         await uploadDocument(applicantId, 'video', files.video);
+
+      if (files.passport)
+        await uploadDocument(applicantId, 'passport', files.passport);
 
       if (files.certificate)
         await uploadDocument(applicantId, 'certificate', files.certificate);
@@ -235,19 +404,19 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
 
   const FileUploadField = ({
-    label,
-    field,
-    currentValue,
-    accept,
-    inputRef,
-    icon
-  }: {
-    label: string,
-    field: keyof Omit<Candidate, 'id'>,
-    currentValue: string,
-    accept: string,
-    inputRef: React.RefObject<HTMLInputElement>,
-    icon: React.ReactNode
+      label,
+      fileType,
+      currentValue,
+      accept,
+      inputRef,
+      icon
+}: {
+  label: string;
+  fileType: FileType;
+  currentValue: string;
+  accept: string;
+  inputRef: React.RefObject<HTMLInputElement>;
+  icon: React.ReactNode;
   }) => (
     <div className="col-span-2">
       <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">{label}</label>
@@ -258,36 +427,39 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             value={currentValue}
             readOnly
             className="w-full p-3 pr-10 bg-gray-50 border border-gray-200 rounded-lg text-xs focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium truncate"
-            placeholder="No file uploaded to Drive yet..."
+            // placeholder="No file uploaded to Drive yet..."
           />
           {currentValue && (
             <div className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500">
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
-            </div>
-          )}
+            </div>)}
+          {currentValue && (
+          <span className="text-[9px] text-green-600 font-bold uppercase">
+            File already uploaded
+          </span>)}          
         </div>
         <input
           type="file"
           ref={inputRef}
           className="hidden"
           accept={accept}
-          onChange={(e) => handleFileChange(e, field)}
+          onChange={(e) => handleFileChange(e, fileType)}
         />
         <button
           type="button"
-          disabled={isUploading[field]}
+          disabled={isUploading[fileType]}
           onClick={() => inputRef.current?.click()}
-          className={`flex items-center space-x-2 px-4 py-3 bg-white border border-gray-200 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-gray-50 transition-all shadow-sm active:scale-95 ${isUploading[field] ? 'opacity-50 cursor-not-allowed' : ''}`}
+          className={`flex items-center space-x-2 px-4 py-3 bg-white border border-gray-200 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-gray-50 transition-all shadow-sm active:scale-95 ${isUploading[fileType] ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
           {icon}
-          <span>{isUploading[field] ? 'Uploading...' : 'Browse'}</span>
+          <span>{isUploading[fileType] ? 'Uploading...' : 'Browse'}</span>
         </button>
       </div>
-      {isUploading[field] && (
+      {isUploading[fileType] && (
         <div className="mt-2 w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
           <div
             className="bg-red-600 h-full transition-all duration-300"
-            style={{ width: `${uploadProgress[field]}%` }}
+            style={{ width: `${uploadProgress[fileType]}%` }}
           ></div>
         </div>
       )}
@@ -326,10 +498,11 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
               categoryId: categories[0]?.id || 'house-keeper',
               nameEn: '',
               nameLocal: '',
-              photoUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400&h=500&fit=crop',
+              photoUrl: '',
               resumeUrl: '',
               videoUrl: '',
               certificateUrl: '',
+              passportUrl: '',
               sex: 'Female',
               age: 20,
               passportStatus: 'Ready',
@@ -482,7 +655,7 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 {/* Photo Upload */}
                 <FileUploadField
                   label="Photo Candidate"
-                  field="photoUrl"
+                  fileType="photo"
                   currentValue={formData.photoUrl}
                   accept="image/*"
                   inputRef={photoInputRef}
@@ -492,7 +665,7 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 {/* Passport Upload */}
                 <FileUploadField
                   label="Passport Candidate"
-                  field="passportUrl"
+                  fileType="passport"
                   currentValue={formData.passportUrl}
                   accept="image/*"
                   inputRef={passportInputRef}
@@ -501,8 +674,8 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
                 {/* CV PDF Upload */}
                 <FileUploadField
-                  label="CV PDF (to Drive)"
-                  field="resumeUrl"
+                  label="CV PDF"
+                  fileType="cv"
                   currentValue={formData.resumeUrl}
                   accept=".pdf"
                   inputRef={resumeInputRef}
@@ -511,8 +684,8 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
                 {/* Video Upload */}
                 <FileUploadField
-                  label="Intro Video (to Drive)"
-                  field="videoUrl"
+                  label="Intro Video"
+                  fileType="video"
                   currentValue={formData.videoUrl}
                   accept="video/*"
                   inputRef={videoInputRef}
@@ -521,8 +694,8 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
                 {/* Certificate Upload */}
                 <FileUploadField
-                  label="Certificate PDF (to Drive)"
-                  field="certificateUrl"
+                  label="Certificate PDF"
+                  fileType="certificate"
                   currentValue={formData.certificateUrl}
                   accept=".pdf"
                   inputRef={certInputRef}

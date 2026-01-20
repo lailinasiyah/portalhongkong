@@ -1,6 +1,6 @@
 {
-  "name": "LPK (SO) Mitra Sarana Sejahtera Portal",
-  "description": "A bilingual portal for LPK (SO) Mitra Sarana Sejahtera showcasing job categories, company profile, and candidate resources in a red and white theme.",
+  "name": "PT. Mitra Sinergi Sukses Portal",
+  "description": "A bilingual portal for PT. Mitra Sinergi Sukses showcasing job categories, company profile, and candidate resources in a red and white theme.",
   "requestFramePermissions": [
     "camera",
     "microphone"

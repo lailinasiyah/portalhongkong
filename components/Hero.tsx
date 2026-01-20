@@ -22,8 +22,8 @@ const Hero: React.FC = () => {
       </div>
 
       <div className="relative z-10 max-w-6xl mx-auto text-white mt-12">
-        <h1 className="text-4xl md:text-7xl lg:text-8xl font-black mb-4 drop-shadow-2xl tracking-tighter leading-none">
-          LPK (SO) MITRA <br className="hidden md:block"/> SARANA SEJAHTERA
+        <h1 className="text-4xl md:text-7xl lg:text-7xl font-black mb-4 drop-shadow-2xl tracking-tighter leading-none">
+          PT. MITRA SINERGI SUKSES
         </h1>
         <h2 className="text-2xl md:text-5xl font-bold mb-8 drop-shadow-lg text-red-600 opacity-100 uppercase tracking-tight">
           {t.orgSub}

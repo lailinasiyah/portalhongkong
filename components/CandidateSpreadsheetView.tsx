@@ -5,6 +5,7 @@ import { useAuth } from '../AuthContext';
 import { Candidate } from '../types';
 import PreviewModal from './PreviewModal';
 import { getApiBaseUrl } from '../utils/api';
+import * as XLSX from 'xlsx';
 
 interface CandidateSpreadsheetViewProps {
   onBack: () => void;
@@ -119,6 +120,58 @@ const CandidateSpreadsheetView: React.FC<CandidateSpreadsheetViewProps> = ({
     );
   };
 
+  //ADD FUNCTION DOWNLOAD SPREADSHEET 20260120
+
+  const exportAllSheetsToExcel = async () => {
+  if (!refCategories.length) return;
+
+  const workbook = XLSX.utils.book_new();
+
+  for (const category of refCategories) {
+    try {
+      // fetch candidates per category
+      const res = await fetch(
+        `${api}/applicant?category_id=${category.id}`
+      );
+      const json = await res.json();
+
+      const candidates = json.data || [];
+
+      const rows = candidates.map((c: any, index: number) => ({
+        No: index + 1,
+        Name: c.name,
+        Sex: c.sex,
+        Age: calculateAge(c.birth_date),
+        Passport: c.document?.passport?.available
+          ? 'READY'
+          : 'NOT READY',
+        CV: c.document?.cv?.available
+          ? 'AVAILABLE'
+          : 'NOT AVAILABLE',
+        Video: c.document?.video?.available
+          ? 'AVAILABLE'
+          : 'NOT AVAILABLE',
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(rows);
+
+      XLSX.utils.book_append_sheet(
+        workbook,
+        worksheet,
+        category.name.substring(0, 31) // Excel max sheet name
+      );
+    } catch (err) {
+      console.error(`Failed export category ${category.name}`, err);
+    }
+  }
+
+  XLSX.writeFile(workbook, 'All_Candidates.xlsx');
+};
+
+
+
+  //////////////////////////////////////////////
+
   const handleAddSheet = () => {
     const name = prompt('Enter name for the new Sheet (Category):');
     if (name) addCategory(name);
@@ -150,12 +203,24 @@ const CandidateSpreadsheetView: React.FC<CandidateSpreadsheetViewProps> = ({
             </p>
           </div>
         </div>
+        
+        <div className="flex items-center space-x-2">
+        <button
+          onClick={exportAllSheetsToExcel}
+          className="flex items-center px-3 py-1.5 bg-green-600 text-white text-[10px] font-black rounded hover:bg-green-700 transition-colors shadow-sm"
+        >
+          Download Excel
+        </button>
+
         <button
           onClick={onBack}
           className="flex items-center px-4 py-1.5 bg-red-600 text-white text-[10px] font-black rounded hover:bg-red-700 transition-colors shadow-sm"
         >
           {t.backToHome}
         </button>
+      </div>
+
+
       </div>
 
       {/* TABLE */}
@@ -232,22 +297,17 @@ const CandidateSpreadsheetView: React.FC<CandidateSpreadsheetViewProps> = ({
                   ) : <span className="text-gray-300">Belum</span>}
                 </td>
                 <td className="border border-gray-300 px-4 py-2 text-center">
-                  {isAdmin ? (
-                    <button
-                      onClick={() => toggleCvAvailability(c)}
-                      className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95 ${c.cvAvailable ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-red-100 text-red-700 hover:bg-red-200'
-                        }`}
-                      title="Click to toggle availability (Admin only)"
-                    >
-                      {c.cvAvailable ? t.cvAvailable : t.cvNotAvailable}
-                    </button>
+                  {c.document?.cv?.available ? (
+                    <span className="px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest bg-green-100 text-green-700">
+                      AVAILABLE
+                    </span>
                   ) : (
-                    <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${c.cvAvailable ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                      }`}>
-                      {c.cvAvailable ? t.cvAvailable : t.cvNotAvailable}
+                    <span className="px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest bg-red-100 text-red-700">
+                      NOT AVAILABLE
                     </span>
                   )}
                 </td>
+
                 <td className="border border-gray-300 px-4 py-2 text-right">
                   <button
                     onClick={() => openWhatsApp(c.phone, c.name)}

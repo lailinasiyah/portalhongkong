@@ -41,13 +41,13 @@ const Login: React.FC<LoginProps> = ({ onSuccess, onBack }) => {
         <div className="text-center mb-8 animate-in fade-in slide-in-from-top-4 duration-700">
           <div className="inline-block bg-white p-3 rounded-full shadow-2xl border-4 border-red-600 w-28 h-28 mb-4">
             <img 
-              src="assets/lpk.png" 
+              src="assets/favicon.png" 
               alt="LPK MSS Logo" 
               className="w-full h-full object-contain"
             />
           </div>
           <h2 className="text-3xl font-black text-blue-900 uppercase tracking-tighter">Portal Access</h2>
-          <p className="text-red-600 text-xs font-black mt-1 uppercase tracking-[0.3em]">Mitra Sarana Sejahtera</p>
+          <p className="text-red-600 text-xs font-black mt-1 uppercase tracking-[0.3em]">PT. Mitra Sinergi Sukses</p>
         </div>
 
         {/* Login Form Card */}
@@ -99,7 +99,7 @@ const Login: React.FC<LoginProps> = ({ onSuccess, onBack }) => {
           
           <div className="p-6 bg-gray-50 border-t border-gray-100 text-center">
             <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">
-              Authorized Personnel Only • IP Tracked
+              Authorized Personnel Only
             </p>
           </div>
         </div>
