@@ -68,33 +68,26 @@ export const MOCK_CANDIDATES: Candidate[] = [
   }
 ];
 
-export const CATEGORIES: CategoryItem[] = [
+export const CATEGORIES = [
   {
-    id: 'house-keeper',
     titleEn: 'House Keeper',
     titleTr: 'Kat Görevlisi',
     imageUrl: '/assets/housekeeping.jpg',
-    link: '#'
   },
   {
-    id: 'waiters',
     titleEn: 'Waiters',
     titleTr: 'Garson',
     imageUrl: '/assets/waiters.webp',
-    link: '#'
   },
   {
-    id: 'cook',
     titleEn: 'Cook',
     titleTr: 'Aşçı',
     imageUrl: '/assets/chef.webp',
-    link: '#'
   },
   {
-    id: 'spa-theraphist',
     titleEn: 'SPA Theraphist',
     titleTr: 'SPA Terapisti',
     imageUrl: '/assets/spatheraphist.jpg',
-    link: '#'
   }
 ];
+

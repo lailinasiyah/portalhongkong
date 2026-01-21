@@ -1,10 +1,10 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Candidate, CategoryItem } from './types';
+import { Candidate, CategoryItem,CandidateApi } from './types';
 import { MOCK_CANDIDATES, CATEGORIES } from './constants';
 
 interface DataContextType {
-  candidates: Candidate[];
+  candidates: CandidateApi[];
   categories: CategoryItem[];
   addCandidate: (c: Omit<Candidate, 'id'>) => Promise<void>;
   updateCandidate: (id: string, updates: Partial<Candidate>) => Promise<void>;
@@ -23,9 +23,9 @@ const dbStore = {
     return data ? JSON.parse(data) : MOCK_CANDIDATES;
   },
   fetchCategories: (): CategoryItem[] => {
-    const data = localStorage.getItem('mss_portal_categories_v2');
-    return data ? JSON.parse(data) : CATEGORIES;
-  },
+  const data = localStorage.getItem('mss_portal_categories_v2');
+  return data ? JSON.parse(data) : [];
+},
   saveCandidates: (data: Candidate[]) => {
     localStorage.setItem('mss_portal_candidates_v2', JSON.stringify(data));
   },
@@ -34,23 +34,51 @@ const dbStore = {
   }
 };
 
+  const mapCategoryFromApi = (apiCat: any): CategoryItem => {
+  const found = CATEGORIES.find(
+    c => c.titleEn.toLowerCase() === apiCat.name.toLowerCase()
+  );
+
+  return {
+    id: apiCat.id,
+    titleEn: found?.titleEn ?? apiCat.name,
+    titleTr: found?.titleTr ?? apiCat.name,
+    imageUrl: found?.imageUrl ?? '/assets/default-category.jpg',
+  };
+};
+
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Initialize data from persistent storage
-  useEffect(() => {
-    const initData = async () => {
-      setLoading(true);
-      // Simulate API call delay
-      await new Promise(r => setTimeout(r, 600));
-      setCandidates(dbStore.fetchCandidates());
-      setCategories(dbStore.fetchCategories());
-      setLoading(false);
-    };
-    initData();
-  }, []);
+useEffect(() => {
+  const load = async () => {
+    setLoading(true);
+
+    const [appRes, catRes] = await Promise.all([
+      fetch('/applicant?limit=100'),
+      fetch('/ref/category?limit=100')
+    ]);
+
+    const appJson = await appRes.json();
+    const catJson = await catRes.json();
+
+    setCandidates(appJson.data);
+
+      setCategories(
+      catJson.data.map((c: any) => mapCategoryFromApi(c))
+    );
+
+    setLoading(false);
+  };
+
+  load();
+}, []);
+
+
+
 
   const addCandidate = async (c: Omit<Candidate, 'id'>) => {
     const newCandidate = { ...c, id: `mss_${Date.now()}` };
@@ -75,22 +103,9 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await new Promise(r => setTimeout(r, 300));
   };
 
-  const addCategory = async (title: string) => {
-    const id = title.toLowerCase().replace(/\s+/g, '-');
-    const newCat: CategoryItem = {
-      id,
-      titleEn: title,
-      titleTr: title,
-      imageUrl: 'https://images.unsplash.com/photo-1554151228-14d9def656e4?q=80&w=500&auto=format&fit=crop',
-      link: '#'
-    };
-    const updated = [...categories, newCat];
-    setCategories(updated);
-    dbStore.saveCategories(updated);
-  };
 
   return (
-    <DataContext.Provider value={{ candidates, categories, addCandidate, updateCandidate, deleteCandidate, addCategory, loading }}>
+    <DataContext.Provider value={{ candidates, categories, addCandidate, updateCandidate, deleteCandidate,  loading }}>
       {children}
     </DataContext.Provider>
   );

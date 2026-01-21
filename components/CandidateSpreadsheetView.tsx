@@ -250,11 +250,11 @@ const CandidateSpreadsheetView: React.FC<CandidateSpreadsheetViewProps> = ({
                 <td className="border border-gray-300 px-4 py-2">
                   {c.document?.passport?.available ? (
                     <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-tight bg-blue-100 text-blue-600`}>
-                      Siap
+                      AVAILABLE
                     </span>
                   ) : (
                     <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-tight bg-yellow-100 text-yellow-700`}>
-                      Belum
+                      NOT AVAILABLE
                     </span>
                   )}
                 </td>

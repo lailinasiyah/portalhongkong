@@ -1,11 +1,11 @@
 
 export interface CategoryItem {
-  id: string;
+  id: number; // ← numeric
   titleEn: string;
   titleTr: string;
   imageUrl: string;
-  link: string;
 }
+
 
 export interface CandidateStat {
   year: string;

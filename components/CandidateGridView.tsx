@@ -2,11 +2,13 @@ import React, { useMemo, useState } from "react";
 import { useLanguage } from "../LanguageContext";
 import { useData } from "../DataContext";
 import PreviewModal from "./PreviewModal";
+import { CandidateApi } from "../types"; // ← WAJIB
+
 
 interface CandidateGridViewProps {
   onBack: () => void;
   categoryId: string | null;
-}
+} 
 
 const CandidateGridView: React.FC<CandidateGridViewProps> = ({
   onBack,
@@ -29,12 +31,14 @@ const CandidateGridView: React.FC<CandidateGridViewProps> = ({
 const filteredCandidates = useMemo(() => {
   if (!categoryId) return [];
 
-  const cid = parseInt(categoryId, 10);
+  const cid = Number(categoryId);
 
-  return candidates.filter((c: any) => {
-    return Number(c.category_id) === cid;
-  });
+  return candidates.filter(
+    (c: CandidateApi) => Number(c.category_id) === cid
+  );
 }, [candidates, categoryId]);
+
+
 console.log("CATEGORY ID (PROP):", categoryId);
 console.log(
   "CATEGORY ID FROM DATA:",
