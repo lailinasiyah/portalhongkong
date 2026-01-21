@@ -16,7 +16,12 @@ export default defineConfig(({ mode }) => {
           '/ref': {
             target: 'http://localhost/rekrutment-filemanager',
             changeOrigin: true,
-          }
+          },
+          '/document': {
+            target: 'http://localhost/rekrutment-filemanager',
+            changeOrigin: true,
+            secure: false,
+          },
         }
     },
     plugins: [react()],

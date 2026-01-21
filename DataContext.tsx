@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Candidate, CategoryItem,CandidateApi } from './types';
 import { MOCK_CANDIDATES, CATEGORIES } from './constants';
+const VITE_API_URL = import.meta.env.VITE_API_URL;
 
 interface DataContextType {
   candidates: CandidateApi[];
@@ -47,6 +48,23 @@ const dbStore = {
   };
 };
 
+const normalizeDocument = (doc: any) => {
+  if (!doc) return { available: false };
+
+  return {
+    ...doc,
+    available: Boolean(doc.available),
+    file_path: doc.file_path ?? null,
+    file_url: doc.file_path
+      ? `${VITE_API_URL}${doc.file_path}`
+      : null,
+  };
+};
+
+
+
+
+
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [categories, setCategories] = useState<CategoryItem[]>([]);
@@ -65,9 +83,24 @@ useEffect(() => {
     const appJson = await appRes.json();
     const catJson = await catRes.json();
 
-    setCandidates(appJson.data);
+    const mappedCandidates = appJson.data.map((c: any) => {
+      const doc = c.document ?? {};
 
-      setCategories(
+      return {
+        ...c,
+        document: {
+          photo: normalizeDocument(doc.photo),
+          passport: normalizeDocument(doc.passport),
+          cv: normalizeDocument(doc.cv),
+          video: normalizeDocument(doc.video),
+          certificate: normalizeDocument(doc.certificate),
+        },
+      };
+    });
+
+    setCandidates(mappedCandidates);
+
+    setCategories(
       catJson.data.map((c: any) => mapCategoryFromApi(c))
     );
 
@@ -76,6 +109,7 @@ useEffect(() => {
 
   load();
 }, []);
+
 
 
 

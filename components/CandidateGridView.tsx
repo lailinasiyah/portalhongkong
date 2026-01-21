@@ -3,6 +3,7 @@ import { useLanguage } from "../LanguageContext";
 import { useData } from "../DataContext";
 import PreviewModal from "./PreviewModal";
 import { CandidateApi } from "../types"; // ← WAJIB
+const VITE_API_URL = import.meta.env.VITE_API_BASE_URL;
 
 
 interface CandidateGridViewProps {
@@ -46,6 +47,7 @@ console.log(
 );
 
 
+
   console.log("FILTERED RESULT:", filteredCandidates);
 
   const selectedCategory = categories.find(
@@ -79,62 +81,86 @@ console.log(
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-            {filteredCandidates.map((candidate: any) => (
-              <div
-                key={candidate.id}
-                className="bg-blue-900 border border-blue-700/50 rounded overflow-hidden"
-              >
-                {/* PHOTO */}
-                <div className="h-56 bg-blue-800 flex items-center justify-center text-xs opacity-40">
-                  PHOTO
-                </div>
+           {filteredCandidates.map((candidate: any) => {
+  console.log(
+    "PHOTO DEBUG:",
+    candidate.name,
+    candidate.document?.photo
+  );
 
-                {/* INFO */}
-                <div className="p-3 border-t border-blue-800/50">
-                  <p className="text-[10px] font-bold text-blue-300">
-                    ID: {candidate.id}
-                  </p>
+  return (
+    <div
+      key={candidate.id}
+      className="bg-blue-900 border border-blue-700/50 rounded overflow-hidden"
+    >
+      {/* PHOTO */}
+      <div className="h-56 bg-blue-800">
+        {candidate.document?.photo?.available &&
+        candidate.document.photo.file_url ? (
+          <img
+            src={encodeURI(candidate.document.photo.file_url)}
+            alt={candidate.name}
+            onError={(e) => {
+    console.error("IMAGE LOAD FAILED:", candidate.document.photo.file_url);
+    e.currentTarget.style.display = "none";
+  }}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="flex items-center justify-center h-full text-xs opacity-40">
+            NO PHOTO
+          </div>
+        )}
+      </div>
 
-                  <h4 className="text-[11px] font-bold uppercase">
-                    {candidate.name}
-                  </h4>
+      {/* INFO */}
+      <div className="p-3 border-t border-blue-800/50">
+        <p className="text-[10px] font-bold text-blue-300">
+          ID: {candidate.id}
+        </p>
 
-                  <p className="text-[10px] opacity-70">
-                    Sex: {candidate.sex}
-                  </p>
+        <h4 className="text-[11px] font-bold uppercase">
+          {candidate.name}
+        </h4>
 
-                  <div className="flex justify-between mt-3">
-                    <button
-                      disabled={!candidate.document?.cv?.available}
-                      onClick={() =>
-                        setPreview({
-                          type: "pdf",
-                          url: candidate.document.cv.file_path,
-                          title: `${candidate.name} - CV`,
-                        })
-                      }
-                      className="text-[9px] bg-blue-700 px-2 py-1 rounded disabled:opacity-30"
-                    >
-                      CV
-                    </button>
+        <p className="text-[10px] opacity-70">
+          Sex: {candidate.sex}
+        </p>
 
-                    <button
-                      disabled={!candidate.document?.video?.available}
-                      onClick={() =>
-                        setPreview({
-                          type: "video",
-                          url: candidate.document.video.file_path,
-                          title: `${candidate.name} - Video`,
-                        })
-                      }
-                      className="text-[9px] bg-blue-700 px-2 py-1 rounded disabled:opacity-30"
-                    >
-                      VIDEO
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
+        <div className="flex justify-between mt-3">
+          <button
+            disabled={!candidate.document?.cv?.available}
+            onClick={() =>
+              setPreview({
+                type: "pdf",
+                url: `${VITE_API_URL}${candidate.document.cv.file_path}`,
+                title: `${candidate.name} - CV`,
+              })
+            }
+            className="text-[9px] bg-blue-700 px-2 py-1 rounded disabled:opacity-30"
+          >
+            CV
+          </button>
+
+          <button
+            disabled={!candidate.document?.video?.available}
+            onClick={() =>
+              setPreview({
+                type: "video",
+                url: `${VITE_API_URL}${candidate.document.video.file_path}`,
+                title: `${candidate.name} - Video`,
+              })
+            }
+            className="text-[9px] bg-blue-700 px-2 py-1 rounded disabled:opacity-30"
+          >
+            VIDEO
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+})}
+
           </div>
         )}
       </main>
