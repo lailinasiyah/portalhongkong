@@ -33,18 +33,18 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, type, url,
         </div>
         <div className="flex-grow bg-gray-100">
           {type === 'pdf' ? (
-            <iframe 
-              src={`${url}#toolbar=0`} 
-              className="w-full h-full border-none"
-              title="PDF Preview"
-            ></iframe>
-          ) : (
-            <video 
-              src={url} 
-              controls 
-              autoPlay 
-              className="w-full h-full object-contain"
-            ></video>
+              <iframe
+                src={`${encodeURI(url)}#toolbar=0`}
+                className="w-full h-full border-none"
+                title="PDF Preview"
+              />
+            ) : (
+              <video
+                src={encodeURI(url)}
+                controls
+                autoPlay
+                className="w-full h-full object-contain"
+              />
           )}
         </div>
       </div>
