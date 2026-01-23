@@ -649,7 +649,6 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
                 <div className="col-span-2">
                   <div className="h-px bg-gray-100 w-full my-4"></div>
-                  <h4 className="text-[10px] font-black text-blue-900 uppercase tracking-widest mb-4">Drive File Uploads</h4>
                 </div>
 
                 {/* Photo Upload */}
