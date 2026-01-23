@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Candidate, CategoryItem,CandidateApi } from './types';
 import { MOCK_CANDIDATES, CATEGORIES } from './constants';
@@ -60,10 +59,6 @@ const normalizeDocument = (doc: any) => {
       : null,
   };
 };
-
-
-
-
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
