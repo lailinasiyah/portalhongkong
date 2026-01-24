@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useData } from '../DataContext';
-import { Candidate,CandidateApi } from '../types';
+import { Candidate, CandidateApi } from '../types';
 import { getApiBaseUrl } from '../utils/api';
 
 const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
@@ -35,13 +35,13 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   type FileType = 'photo' | 'cv' | 'video' | 'certificate' | 'passport';
 
 
-    const [files, setFiles] = useState<Record<FileType, File | undefined>>({
-      photo: undefined,
-      cv: undefined,
-      video: undefined,
-      certificate: undefined,
-      passport: undefined,
-    });
+  const [files, setFiles] = useState<Record<FileType, File | undefined>>({
+    photo: undefined,
+    cv: undefined,
+    video: undefined,
+    certificate: undefined,
+    passport: undefined,
+  });
 
   ///////////////////////////////////////
 
@@ -112,6 +112,8 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       }),
     });
 
+
+
     if (!response.ok) {
       throw new Error('Failed to create applicant');
     }
@@ -144,56 +146,56 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   //Fixing handle edit 20260120
 
   const handleEdit = (c: CandidateApi) => {
-  setEditingId(c.id);
+    setEditingId(c.id);
 
-  setFormData({
-    categoryId: c.category_id, // ✅ SEKARANG VALID
-    nameEn: c.name,
-    nameLocal: c.name_local || '',
-    photoUrl: c.document?.photo?.file_path
-      ? `${api}/document${c.document.photo.file_path}`
-      : '',
-    resumeUrl: c.document?.cv?.file_path
-      ? `${api}/document${c.document.cv.file_path}`
-      : '',
-    videoUrl: c.document?.video?.file_path
-      ? `${api}/document${c.document.video.file_path}`
-      : '',
-    certificateUrl: c.document?.certificate?.file_path
-      ? `${api}/document${c.document.certificate.file_path}`
-      : '',
-    passportUrl: c.document?.passport?.file_path
-      ? `${api}/document${c.document.passport.file_path}`
-      : '',
-    sex: c.sex,
-    age: calculateAge(c.birth_date),
-    passportStatus: c.passport_status,
-    cvAvailable: c.document?.cv?.available ?? false,
-    birthDate: c.birth_date.slice(0, 10),
-  });
+    setFormData({
+      categoryId: c.category_id, // ✅ SEKARANG VALID
+      nameEn: c.name,
+      nameLocal: c.name_local || '',
+      photoUrl: c.document?.photo?.file_path
+        ? `${api}/document${c.document.photo.file_path}`
+        : '',
+      resumeUrl: c.document?.cv?.file_path
+        ? `${api}/document${c.document.cv.file_path}`
+        : '',
+      videoUrl: c.document?.video?.file_path
+        ? `${api}/document${c.document.video.file_path}`
+        : '',
+      certificateUrl: c.document?.certificate?.file_path
+        ? `${api}/document${c.document.certificate.file_path}`
+        : '',
+      passportUrl: c.document?.passport?.file_path
+        ? `${api}/document${c.document.passport.file_path}`
+        : '',
+      sex: c.sex,
+      age: calculateAge(c.birth_date),
+      passportStatus: c.passport_status,
+      cvAvailable: c.document?.cv?.available ?? false,
+      birthDate: c.birth_date.slice(0, 10),
+    });
 
-  setFiles({
-    photo: undefined,
-    cv: undefined,
-    video: undefined,
-    certificate: undefined,
-    passport: undefined,
-  });
+    setFiles({
+      photo: undefined,
+      cv: undefined,
+      video: undefined,
+      certificate: undefined,
+      passport: undefined,
+    });
 
-  setIsAdding(false);
-};
+    setIsAdding(false);
+  };
 
-    const fileUrlMap: Record<FileType, keyof typeof formData> = {
-      photo: 'photoUrl',
-      cv: 'resumeUrl',
-      video: 'videoUrl',
-      certificate: 'certificateUrl',
-      passport: 'passportUrl',
-    };
+  const fileUrlMap: Record<FileType, keyof typeof formData> = {
+    photo: 'photoUrl',
+    cv: 'resumeUrl',
+    video: 'videoUrl',
+    certificate: 'certificateUrl',
+    passport: 'passportUrl',
+  };
 
 
 
-  
+
   //
   const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
     setNotification({ message, type });
@@ -204,7 +206,7 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   // const handleFileChange = (
   //   e: React.ChangeEvent<HTMLInputElement>,
   //   type: 'photo' | 'cv' | 'video' | 'certificate' | 'passport'
-    
+
   // ) => {
   //   const file = e.target.files?.[0];
   //   if (file) {
@@ -215,29 +217,29 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
   //Ubah handleFileChange 20262001
 
-      const handleFileChange = (
-        e: React.ChangeEvent<HTMLInputElement>,
-        type: FileType
-      ) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
+  const handleFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    type: FileType
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-        // 1️⃣ simpan file
-        setFiles(prev => ({ ...prev, [type]: file }));
+    // 1️⃣ simpan file
+    setFiles(prev => ({ ...prev, [type]: file }));
 
-        // 2️⃣ tampilkan nama file / preview di text field
-        const preview =
-          type === 'photo' || type === 'passport'
-            ? URL.createObjectURL(file) // image preview
-            : file.name; // text preview
+    // 2️⃣ tampilkan nama file / preview di text field
+    const preview =
+      type === 'photo' || type === 'passport'
+        ? URL.createObjectURL(file) // image preview
+        : file.name; // text preview
 
-        const key = fileUrlMap[type];
+    const key = fileUrlMap[type];
 
-        setFormData(prev => ({
-          ...prev,
-          [key]: preview,
-        }));
-      };
+    setFormData(prev => ({
+      ...prev,
+      [key]: preview,
+    }));
+  };
 
 
   //
@@ -271,80 +273,80 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   };
 
   const updateApplicant = async (
-  id: string,
-  data: Omit<Candidate, 'id'>
-) => {
-  const response = await fetch(`${api}/applicant/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      name: data.nameEn,
-      category_id: data.categoryId,
-      birth_date: data.birthDate,
-      sex: data.sex,
-      passport_status: data.passportStatus,
-      updated_by: 1,
-    }),
-  });
+    id: string,
+    data: Omit<Candidate, 'id'>
+  ) => {
+    const response = await fetch(`${api}/applicant/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: data.nameEn,
+        category_id: data.categoryId,
+        birth_date: data.birthDate,
+        sex: data.sex,
+        passport_status: data.passportStatus,
+        updated_by: 1,
+      }),
+    });
 
-  if (!response.ok) {
-    throw new Error('Failed to update applicant');
-  }
+    if (!response.ok) {
+      throw new Error('Failed to update applicant');
+    }
 
-  return response.json();
-};
+    return response.json();
+  };
 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-        
-      
-   
+
+
+
       // let applicantId = result.id;
-        let applicantId = editingId;
-          // 🔥 CREATE
-        if (!editingId) {
-          const result = await addData();
-          applicantId = result.id;
-        }
+      let applicantId = editingId;
+      // 🔥 CREATE
+      if (!editingId) {
+        const result = await addData();
+        applicantId = result.id;
+      }
 
-       // 🔥 UPDATE DATA (OPTIONAL)
-        if (editingId) {
-          await updateApplicant(editingId, formData);
-        }
+      // 🔥 UPDATE DATA (OPTIONAL)
+      if (editingId) {
+        await updateApplicant(editingId, formData);
+      }
 
-                // 🔥 AUTO CLOSE MODAL
-        setIsAdding(false);
-        setEditingId(null);
+      // 🔥 AUTO CLOSE MODAL
+      setIsAdding(false);
+      setEditingId(null);
 
-        // (opsional) reset form
-        setFormData({
-          categoryId: categories[0]?.id || 'house-keeper',
-          nameEn: '',
-          nameLocal: '',
-          photoUrl: '',
-          resumeUrl: '',
-          videoUrl: '',
-          certificateUrl: '',
-          passportUrl: '',
-          sex: '',
-          age: '',
-          passportStatus: 'Ready',
-          cvAvailable: true,
-          birthDate: '',
-        });
+      // (opsional) reset form
+      setFormData({
+        categoryId: categories[0]?.id || 'house-keeper',
+        nameEn: '',
+        nameLocal: '',
+        photoUrl: '',
+        resumeUrl: '',
+        videoUrl: '',
+        certificateUrl: '',
+        passportUrl: '',
+        sex: '',
+        age: '',
+        passportStatus: 'Ready',
+        cvAvailable: true,
+        birthDate: '',
+      });
 
-        setFiles({
-          photo: undefined,
-          cv: undefined,
-          video: undefined,
-          certificate: undefined,
-          passport: undefined,
-        });
+      setFiles({
+        photo: undefined,
+        cv: undefined,
+        video: undefined,
+        certificate: undefined,
+        passport: undefined,
+      });
 
 
 
@@ -404,19 +406,19 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
 
   const FileUploadField = ({
-      label,
-      fileType,
-      currentValue,
-      accept,
-      inputRef,
-      icon
-}: {
-  label: string;
-  fileType: FileType;
-  currentValue: string;
-  accept: string;
-  inputRef: React.RefObject<HTMLInputElement>;
-  icon: React.ReactNode;
+    label,
+    fileType,
+    currentValue,
+    accept,
+    inputRef,
+    icon
+  }: {
+    label: string;
+    fileType: FileType;
+    currentValue: string;
+    accept: string;
+    inputRef: React.RefObject<HTMLInputElement>;
+    icon: React.ReactNode;
   }) => (
     <div className="col-span-2">
       <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">{label}</label>
@@ -427,16 +429,16 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             value={currentValue}
             readOnly
             className="w-full p-3 pr-10 bg-gray-50 border border-gray-200 rounded-lg text-xs focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium truncate"
-            // placeholder="No file uploaded to Drive yet..."
+          // placeholder="No file uploaded to Drive yet..."
           />
           {currentValue && (
             <div className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500">
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
             </div>)}
           {currentValue && (
-          <span className="text-[9px] text-green-600 font-bold uppercase">
-            File already uploaded
-          </span>)}          
+            <span className="text-[9px] text-green-600 font-bold uppercase">
+              File already uploaded
+            </span>)}
         </div>
         <input
           type="file"
