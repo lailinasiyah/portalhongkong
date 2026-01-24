@@ -3,15 +3,13 @@ import React from 'react';
 import { useData } from '../DataContext';
 import PortalButton from './PortalButton';
 import { useLanguage } from '../LanguageContext';
+import { useNavigate } from 'react-router-dom';
 
-interface CategorySectionProps {
-  onViewGrid: (categoryId: string) => void;
-  onViewSpreadsheet: () => void;
-}
 
-const CategorySection: React.FC<CategorySectionProps> = ({ onViewGrid, onViewSpreadsheet }) => {
+const CategorySection: React.FC = () => {
   const { t, language } = useLanguage();
   const { categories } = useData();
+  const navigate = useNavigate();
 
   return (
     <section className="bg-diagonal-stripes pb-24 relative">
@@ -24,9 +22,9 @@ const CategorySection: React.FC<CategorySectionProps> = ({ onViewGrid, onViewSpr
             {t.candidatesSub}
           </p>
           <div className="flex justify-center">
-            <PortalButton 
-              onClick={onViewSpreadsheet}
-              variant="outline" 
+            <PortalButton
+              onClick={() => navigate('/spreadsheet')}
+              variant="outline"
               className="px-10 py-2 border-2 hover:bg-white hover:text-blue-900 transition-all"
             >
               {t.viewList}
@@ -38,20 +36,20 @@ const CategorySection: React.FC<CategorySectionProps> = ({ onViewGrid, onViewSpr
       <div className="container mx-auto px-4 text-center relative z-10">
         {/* Call to Action Box - Color matched to active buttons */}
         <div className="inline-block bg-white border-2 border-dashed border-red-200 rounded-2xl shadow-sm py-6 px-10 mb-16 max-w-4xl w-full md:w-auto">
-           <div className="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">
-             <span className="text-gray-900 font-bold text-lg md:text-xl">
-               {t.candidatePrompt.split(',')[0]},
-             </span>
-             {/* Static label colored same as active buttons (blue-700) */}
-             <div 
+          <div className="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">
+            <span className="text-gray-900 font-bold text-lg md:text-xl">
+              {t.candidatePrompt.split(',')[0]},
+            </span>
+            {/* Static label colored same as active buttons (blue-700) */}
+            <div
               className="px-6 py-1.5 text-xs md:text-sm font-medium rounded shadow-md bg-blue-700 text-white cursor-default whitespace-nowrap select-none"
             >
               {t.viewDetails}
             </div>
-             <span className="text-gray-900 font-bold text-lg md:text-xl">
-               {t.candidatePrompt.split(',').slice(1).join(',')}
-             </span>
-           </div>
+            <span className="text-gray-900 font-bold text-lg md:text-xl">
+              {t.candidatePrompt.split(',').slice(1).join(',')}
+            </span>
+          </div>
         </div>
 
         {/* Category Grid - 2 columns per row */}
@@ -59,9 +57,9 @@ const CategorySection: React.FC<CategorySectionProps> = ({ onViewGrid, onViewSpr
           {categories.map((item) => (
             <div key={item.id} className="group bg-white rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 flex flex-col">
               <div className="relative h-64 overflow-hidden">
-                <img 
-                  src={item.imageUrl} 
-                  alt={language === 'EN' ? item.titleEn : item.titleTr} 
+                <img
+                  src={item.imageUrl}
+                  alt={language === 'EN' ? item.titleEn : item.titleTr}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
@@ -76,9 +74,9 @@ const CategorySection: React.FC<CategorySectionProps> = ({ onViewGrid, onViewSpr
                 <p className="text-gray-500 text-sm font-medium italic">
                   {t.availableFor.replace('{category}', language === 'EN' ? item.titleEn : item.titleTr)}
                 </p>
-                <PortalButton 
-                  onClick={() => onViewGrid(item.id)}
-                  variant="blue" 
+                <PortalButton
+                  onClick={() => navigate(`/category/${item.id}`)}
+                  variant="blue"
                   className="w-full md:w-auto px-8"
                 >
                   {t.viewDetails}
@@ -92,12 +90,12 @@ const CategorySection: React.FC<CategorySectionProps> = ({ onViewGrid, onViewSpr
         <div className="mt-24 pb-12">
           <div className="h-px bg-gradient-to-r from-transparent via-red-200 to-transparent mb-12"></div>
           <p className="text-gray-800 text-xl md:text-2xl font-black mb-6 tracking-tight uppercase">{t.companyWebsite}</p>
-          <PortalButton 
+          <PortalButton
             onClick={() => window.open('https://asyakoprusu.com/', '_blank')}
-            variant="blue" 
+            variant="blue"
             className="px-12 py-3 text-lg rounded-full shadow-xl hover:scale-105 active:scale-95 transition-transform"
           >
-             {t.visitWebsite}
+            {t.visitWebsite}
           </PortalButton>
         </div>
       </div>
