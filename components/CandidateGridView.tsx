@@ -5,6 +5,7 @@ import PreviewModal from "./PreviewModal";
 import { CandidateApi } from "../types"; // ← WAJIB
 import { VideoCameraIcon, DocumentTextIcon } from "@heroicons/react/24/solid";
 const VITE_API_URL = import.meta.env.VITE_API_URL;
+import { getApiBaseUrl } from "../utils/api";
 
 
 interface CandidateGridViewProps {
@@ -55,7 +56,7 @@ const CandidateGridView: React.FC<CandidateGridViewProps> = ({
 
     const fetchCandidates = async () => {
       const response = await fetch(
-        `${VITE_API_URL}/applicant?category_id=${categoryId}`
+        `${getApiBaseUrl()}/applicant?category_id=${categoryId}`
       );
       const data = await response.json();
       setCandidates(data.data);

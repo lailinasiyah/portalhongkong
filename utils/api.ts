@@ -11,6 +11,6 @@ export function getApiBaseUrl() {
         return `${protocol}//${hostname}/rekrutment-filemanager`;
     }
 
-    // selain itu (production)
-    return 'https://sasea.demo.api';
+    // selain itu ambil dari .env
+    return process.env.VITE_API_URL;
 }
