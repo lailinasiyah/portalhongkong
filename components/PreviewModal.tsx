@@ -16,9 +16,9 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, type, url,
   const { t } = useLanguage();
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center">
       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose}></div>
-      <div className="relative bg-white w-full max-w-5xl h-[80vh] rounded-xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
+      <div className="relative bg-white w-full h-full rounded-none shadow-2xl flex flex-col overflow-hidden">
         <div className="flex justify-between items-center p-4 bg-black text-white border-b border-white/10">
           <h3 className="text-lg font-bold truncate pr-4">{title}</h3>
           <button 
@@ -31,20 +31,24 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, type, url,
             </svg>
           </button>
         </div>
-        <div className="flex-grow bg-gray-100">
+        <div className="flex-grow bg-black">
           {type === 'pdf' ? (
               <iframe
                 src={`${encodeURI(url)}#toolbar=0`}
-                className="w-full h-full border-none"
+                className="w-full h-full"
                 title="PDF Preview"
               />
             ) : (
+              <div className="w-full h-full flex items-center justify-center bg-black">
+              <div className="aspect-[9/16] h-full max-h-full max-w-full">
               <video
                 src={encodeURI(url)}
                 controls
                 autoPlay
-                className="w-full h-full object-contain"
+                className="w-full h-full object-contain bg-black rounded-xl"
               />
+              </div>
+              </div>
           )}
         </div>
       </div>
