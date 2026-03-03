@@ -40,16 +40,20 @@ const Navbar: React.FC<NavbarProps> = ({ onAdminClick }) => {
             />
           </button>
           <button
-            onClick={() => setLanguage('TR')}
-            className={`w-8 h-8 rounded-full overflow-hidden border-2 transition-all active:scale-95 ${language === 'TR' ? 'border-red-600 scale-110 shadow-sm' : 'border-transparent opacity-50 hover:opacity-100'}`}
-            title="Turkish"
-          >
-            <img
-              src="https://flagcdn.com/w40/tr.png"
-              alt="Turkish Flag"
-              className="w-full h-full object-cover"
-            />
-          </button>
+              onClick={() => setLanguage('HK')}
+              className={`w-8 h-8 rounded-full overflow-hidden border-2 transition-all active:scale-95 ${
+                language === 'HK'
+                  ? 'border-red-600 scale-110 shadow-sm'
+                  : 'border-transparent opacity-50 hover:opacity-100'
+              }`}
+              title="Hong Kong"
+            >
+              <img
+                src="https://flagcdn.com/w40/hk.png"
+                alt="Hong Kong Flag"
+                className="w-full h-full object-cover"
+              />
+            </button>
         </div>
 
         <div className="hidden md:flex space-x-2">

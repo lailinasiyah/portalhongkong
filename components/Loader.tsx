@@ -37,7 +37,7 @@ const Loader: React.FC = () => {
                 PT. Mitra Sinergi Sukses
             </h2>
             <h2 className="text-white text-xs font-black tracking-[0.5em] uppercase opacity-20 animate-pulse">
-               Hospitality and Spa Candidate's Portal
+               Domesctic helper Candidate's Portal
             </h2>
         </div>
       </div>

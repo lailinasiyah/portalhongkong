@@ -18,7 +18,7 @@ export const UI_TRANSLATIONS = {
     addressLabel: "Address",
     contactLabel: "Contact",
     learnMore: "Learn More",
-    orgSub: "Hospitality and SPA Candidate's Portal",
+    orgSub: " Domesctic helper Candidate's Portal",
     chartTitle: "Candidate Growth",
     chartSub: "Total candidate pool growth from category",
     candidateUnit: "Candidates",
@@ -58,7 +58,7 @@ export const UI_TRANSLATIONS = {
     availableFor: "Available candidates for {category}",
     annualPoolLabel: "Annual Candidate Pool"
   },
-  TR: {
+  HK: {
     welcome: "Hoş Geldiniz",
     welcomeBadge: "Hoş Geldiniz",
     subWelcome: "Endonezya Ana Enerji Ajansı",

@@ -11,7 +11,7 @@ const Hero: React.FC = () => {
       <div 
         className="absolute inset-0 bg-cover bg-center bg-fixed transition-opacity duration-1000"
         style={{ 
-          backgroundImage: `url('https://images.unsplash.com/photo-1527838832700-5059252407fa?q=80&w=2000&auto=format&fit=crop')`,
+          backgroundImage: `url('https://images.unsplash.com/photo-1542189412744-bfabf27522ee?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')`,
         }}
       >
         {/* Transparent Overlay - Not too thick, allows Turkey theme to show through */}
