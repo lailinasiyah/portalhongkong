@@ -70,6 +70,11 @@ export const MOCK_CANDIDATES: Candidate[] = [
 
 export const CATEGORIES = [
   {
+    titleEn: 'Domestic Helper',
+    titleTr: '家庭傭工',
+    imageUrl: '/assets/home.png',
+  },
+  {
     titleEn: 'House Keeper',
     titleTr: 'Kat Görevlisi',
     imageUrl: '/assets/housekeeping.jpg',

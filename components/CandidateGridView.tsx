@@ -67,7 +67,7 @@ const CandidateGridView: React.FC<CandidateGridViewProps> = ({
 
 
   return (
-    <div className="min-h-screen bg-[#0b1a2a] text-white pb-20">
+    <div className="min-h-screen bg-gradient-to-br from-[#BA0021] via-[#C8102E] to-[#E10600] text-white pb-20">
       {/* HEADER */}
       <header className="py-8 px-4 bg-[#0d1e2e] border-b border-blue-900/50 text-center">
         <button
