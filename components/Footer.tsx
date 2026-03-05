@@ -55,11 +55,11 @@ const Footer: React.FC = () => {
             <div className="space-y-4 text-sm text-gray-400">
               <div className="flex items-center justify-center md:justify-start">
                 <span className="mr-3">📞</span>
-                <span>+62 822-7167-4145</span>
+                <span>+62 811-314-300</span>
               </div>
               <div className="flex items-center justify-center md:justify-start">
-                <span className="mr-3">✉️</span>
-                <span>lpkmitrasaranasejahtera@gmail.com</span>
+                {/* <span className="mr-3">✉️</span> */}
+                {/* <span>lpkmitrasaranasejahtera@gmail.com</span> */}
               </div>
             </div>
           </div>

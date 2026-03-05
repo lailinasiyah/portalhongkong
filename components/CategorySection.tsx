@@ -53,7 +53,7 @@ const CategorySection: React.FC = () => {
         </div>
 
         {/* Category Grid - 2 columns per row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 gap-8 md:gap-12 max-w-6xl mx-auto justify-items-center">
           {categories.map((item) => (
             <div key={item.id} className="group bg-white rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 flex flex-col">
               <div className="relative h-64 overflow-hidden">
