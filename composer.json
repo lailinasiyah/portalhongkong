@@ -1,0 +1,11 @@
+{
+    "require": {
+        "mikecao/flight": "^3.17",
+        "knifelemon/comment-template": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "app\\": "app/"
+        }
+    }
+}

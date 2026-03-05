@@ -1,0 +1,23 @@
+CREATE TABLE IF NOT EXISTS member (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+DELIMITER $$
+
+CREATE FUNCTION hash_password(p_password VARCHAR(255))
+RETURNS VARCHAR(255)
+DETERMINISTIC
+BEGIN
+    RETURN p_password;
+END$$
+
+DELIMITER ;
+
+ALTER TABLE member
+ADD role VARCHAR(20) NOT NULL DEFAULT 'user';
+
+UPDATE member SET role = 'admin' WHERE username = 'admin';
