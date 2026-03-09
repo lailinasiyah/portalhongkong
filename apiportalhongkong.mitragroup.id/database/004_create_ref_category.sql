@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS ref_category (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO ref_category (name) VALUES ('HOUSE KEEPER');
+INSERT INTO ref_category (name) VALUES ('GARDENER');
+INSERT INTO ref_category (name) VALUES ('CLEANER');
+INSERT INTO ref_category (name) VALUES ('DRIVER');
+INSERT INTO ref_category (name) VALUES ('WAITER');
+
