@@ -3,12 +3,12 @@ export function getApiBaseUrl() {
 
     // localhost
     if (hostname === 'localhost') {
-        return `${protocol}//localhost/rekrutment-filemanager`;
+        return `${protocol}//localhost/hongkongrekrutment-filemanager`;
     }
 
     // LAN IP (192.168.x.x)
     if (hostname.startsWith('192.168.')) {
-        return `${protocol}//${hostname}/rekrutment-filemanager`;
+        return `${protocol}//${hostname}/hongkongrekrutment-filemanager`;
     }
 
     // selain itu ambil dari .env

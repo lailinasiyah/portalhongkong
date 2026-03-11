@@ -149,7 +149,7 @@ require 'function/refcategory.php';
 //         '/auth/login',
 //     ];
 
-//     $basePath = '/rekrutment-filemanager';
+//     $basePath = '/hongkongrekrutment-filemanager';
 //     $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
 //     if (str_starts_with($path, $basePath)) {

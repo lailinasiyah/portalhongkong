@@ -10,15 +10,15 @@ export default defineConfig(({ mode }) => {
       host: '0.0.0.0',
           proxy: {
           '/applicant': {
-            target: 'http://localhost/rekrutment-filemanager',
+            target: 'http://localhost/hongkongrekrutment-filemanager',
             changeOrigin: true,
           },
           '/ref': {
-            target: 'http://localhost/rekrutment-filemanager',
+            target: 'http://localhost/hongkongrekrutment-filemanager',
             changeOrigin: true,
           },
           '/document': {
-            target: 'http://localhost/rekrutment-filemanager',
+            target: 'http://localhost/hongkongrekrutment-filemanager',
             changeOrigin: true,
             secure: false,
           },

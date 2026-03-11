@@ -158,6 +158,10 @@ Thank you.
         Name: c.name,
         Sex: c.sex,
         Age: calculateAge(c.birth_date),
+
+          Weight: c.weight,
+          Height: c.height,
+          Marital_Status: c.marital_status,
         Passport: c.document?.passport?.available
           ? 'READY'
           : 'NOT READY',
@@ -249,6 +253,10 @@ Thank you.
               <th className="border px-4 py-2">{t.colName}</th>
               <th className="border px-4 py-2">{t.colSex}</th>
               <th className="border px-4 py-2">{t.colAge}</th>
+              <th className="border px-4 py-2">Weight</th>
+              <th className="border px-4 py-2">Height</th>
+              <th className="border px-4 py-2">Marital</th>
+              <th className="border px-4 py-2">Last Education</th>
               <th className="border px-4 py-2">{t.colPassport}</th>
               <th className="border px-4 py-2">{t.colCvLink}</th>
               <th className="border px-4 py-2">{t.colVideoLink}</th>
@@ -262,6 +270,25 @@ Thank you.
                 <td className="border px-4 font-bold">{c.name}</td>
                 <td className="border px-4">{c.sex}</td>
                 <td className="border px-4">{calculateAge(c.birth_date)}</td>
+                <td className="border px-4">
+                  {c.weight ? `${c.weight} kg` : '-'}
+                </td>
+
+                <td className="border px-4">
+                  {c.height ? `${c.height} cm` : '-'}
+                </td>
+
+                <td className="border px-4">
+                  {c.marital_status
+                    ? c.marital_status.toUpperCase()
+                    : '-'}
+                </td>
+
+                <td className="border px-4">
+                  {c.last_education
+                    ? c.last_education.toUpperCase()
+                    : '-'}
+                </td>
                 <td className="border border-gray-300 px-4 py-2">
                   {c.document?.passport?.available ? (
                     <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-tight bg-blue-100 text-blue-600`}>

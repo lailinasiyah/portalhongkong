@@ -57,6 +57,11 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     passportUrl: '',
     sex: 'F',
     age: 20,
+
+    weight: 0,
+    height: 0,
+    maritalStatus: 'single',
+    lasteducation: '',
     passportStatus: 'Ready',
     cvAvailable: true
   });
@@ -108,6 +113,10 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         category_id: formData.categoryId,
         birth_date: formData.birthDate,
         sex: formData.sex,
+        weight: formData.weight,
+        height: formData.height,
+        marital_status: formData.maritalStatus,
+        last_education: formData.lasteducation,
         created_by: 1
       }),
     });
@@ -168,6 +177,10 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         ? `${api}/document${c.document.passport.file_path}`
         : '',
       sex: c.sex,
+      weight: c.weight || 0,
+      height: c.height || 0,
+      maritalStatus: c.marital_status || 'single',
+      lasteducation: c.last_education || '',
       age: calculateAge(c.birth_date),
       passportStatus: c.passport_status,
       cvAvailable: c.document?.cv?.available ?? false,
@@ -286,6 +299,10 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         category_id: data.categoryId,
         birth_date: data.birthDate,
         sex: data.sex,
+        weight: data.weight,
+        height: data.height,
+        marital_status: data.maritalStatus,
+        last_education: data.lasteducation,
         passport_status: data.passportStatus,
         updated_by: 1,
       }),
@@ -334,7 +351,12 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         certificateUrl: '',
         passportUrl: '',
         sex: '',
-        age: '',
+        age: '0',  
+
+        weight: 0,
+        height: 0,
+        maritalStatus: 'single',
+        lasteducation: '',
         passportStatus: 'Ready',
         cvAvailable: true,
         birthDate: '',
@@ -603,7 +625,7 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
               <div className="p-8 grid grid-cols-2 gap-6 max-h-[70vh] overflow-y-auto">
                 <div className="col-span-2">
-                  <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Full Name (English) <span className="text-red-500">*</span></label>
+                  <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Full Name <span className="text-red-500">*</span></label>
                   <input
                     type="text"
                     value={formData.nameEn}
@@ -647,6 +669,69 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                       <span className="text-xs font-bold text-gray-700">Female</span>
                     </label>
                   </div>
+                </div>
+
+                                {/* Weight */}
+                <div className="col-span-2 md:col-span-1">
+                  <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">
+                    Weight (KG)
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.weight}
+                    onChange={e => setFormData({ ...formData,  weight: e.target.value ? parseInt(e.target.value) : 0 })}
+                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none font-bold"
+                  />
+                </div>
+
+                {/* Height */}
+                <div className="col-span-2 md:col-span-1">
+                  <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">
+                    Height (CM)
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.height}
+                    onChange={e => setFormData({ ...formData, height: e.target.value ? parseInt(e.target.value) : 0 })}
+                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none font-bold"
+                  />
+                </div>
+
+                {/* Marital Status */}
+                <div className="col-span-2 md:col-span-1">
+                  <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">
+                    Marital Status
+                  </label>
+                  <select
+                    value={formData.maritalStatus}
+                    onChange={e => setFormData({ ...formData, maritalStatus: e.target.value })}
+                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none font-bold"
+                  >
+                    <option value="single">Single</option>
+                    <option value="married">Married</option>
+                  </select>
+                </div>
+
+                {/* Last Education */}
+                <div className="col-span-2 md:col-span-1">
+                  <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">
+                    Last Education
+                  </label>
+
+                  <select
+                    value={formData.lasteducation}
+                    onChange={e =>
+                      setFormData({ ...formData, lasteducation: e.target.value })
+                    }
+                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none font-bold"
+                  >
+                    <option value="">Select Education</option>
+                    <option value="SD">SD</option>
+                    <option value="SMP">SMP</option>
+                    <option value="SMA">SMA</option>
+                    <option value="DIPLOMA">DIPLOMA</option>
+                    <option value="SARJANA">SARJANA</option>
+                  </select>
                 </div>
 
                 <div className="col-span-2">

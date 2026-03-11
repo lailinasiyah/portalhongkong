@@ -24,6 +24,10 @@ export interface Candidate {
   passportUrl: string;
   birthDate:string;
   sex: 'M' | 'F';
+  weight: 0,
+  height: 0,
+  maritalStatus: 'single',
+  lasteducation: string;
   age: number;
   passportStatus: string;
   cvAvailable: boolean;
@@ -36,6 +40,10 @@ export interface CandidateApi {
   name_local?: string;
   birth_date: string;
   sex: 'M' | 'F';
+  weight?: number;
+  height?: number;
+  marital_status?: string;
+  last_education?: string;
   passport_status: string;
   category_name?: string;
   document?: {

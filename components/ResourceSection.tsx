@@ -27,7 +27,10 @@ const ResourceSection: React.FC = () => {
   console.log(data);
 
   // Calculate the max count to scale the bars proportionally
-  const maxCount = Math.max(...data.map(s => s.count_cat), 1);
+  const maxCount = Math.max(
+  ...data.flatMap((s: any) => [s.female, s.male]),
+  1
+);
 
   return (
     <section className="bg-diagonal-stripes py-16 md:py-24 relative overflow-hidden">
@@ -45,38 +48,64 @@ const ResourceSection: React.FC = () => {
         {/* Custom Bar Chart Card with requested styling */}
         <div className="w-full bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group flex flex-col h-full border border-gray-100">
           <div className="p-8 md:p-14">
-            <div className="flex items-end justify-between space-x-2 md:space-x-8 h-64 md:h-80 w-full mb-8 pt-10 px-4">
+           <div className="flex items-end justify-between space-x-6 md:space-x-12 h-80 md:h-[420px] w-full mb-10 pt-10 px-6">
               {data.map((stat: any) => {
-                const heightPercentage = (stat.count_cat / maxCount) * 100;
+                const femaleHeight = (stat.female / maxCount) * 100;
+                const maleHeight = (stat.male / maxCount) * 100;
+
                 return (
-                  <div key={stat.id} className="flex-1 flex flex-col items-center group/bar relative h-full">
-                    {/* Tooltip value */}
-                    <div className="absolute -top-10 opacity-0 group-hover/bar:opacity-100 transition-opacity duration-300 bg-red-600 text-white text-[10px] font-black py-1.5 px-4 rounded-full shadow-xl whitespace-nowrap z-10">
-                      {stat.count_cat} {t.candidateUnit}
-                    </div>
+                  <div key={stat.id} className="flex-1 flex flex-col items-center h-full">
 
-                    {/* The Bar */}
-                    <div className="relative w-full max-w-[80px] h-full flex items-end">
-                      <div
-                        className="absolute bottom-0 w-full bg-gradient-to-t from-red-700 to-red-500 rounded-lg shadow-md
-               group-hover/bar:shadow-red-200 group-hover/bar:scale-105
-               transition-all duration-500 ease-out cursor-pointer"
-                        style={{ height: `${Math.max(heightPercentage, 8)}%` }}
-                      >
-                        <div className="absolute inset-0 bg-white/20 opacity-0 group-hover/bar:opacity-100 transition-opacity rounded-lg"></div>
+                    <div className="flex items-end space-x-4 md:space-x-6 h-full">
 
-                        {/* Inline count for mobile */}
-                        <div className="md:hidden absolute -top-6 w-full text-center text-[10px] font-black text-red-600">
-                          {stat.count_cat}
-                        </div>
+                      {/* FEMALE */}
+                      <div className="flex flex-col items-center justify-end h-full">
+                        <div className="relative flex flex-col items-center justify-end h-full">
+                            {/* angka mengikuti tinggi bar */}
+                            <span
+                              className="absolute text-sm md:text-base font-bold text-black-600"
+                              style={{ bottom: `calc(${femaleHeight}% + 6px)` }}
+                            >
+                              {stat.female}
+                            </span>
+
+                            <div
+                              className="w-14 md:w-16 bg-pink-500 rounded-lg"
+                              style={{ height: `${Math.max(femaleHeight, 8)}%` }}
+                            ></div>
+
+                          </div>
+                        <span className="text-[16px] mt-1 text-pink-600 font-bold">F</span>
                       </div>
+
+                      {/* MALE */}
+                      <div className="flex flex-col items-center justify-end h-full">
+                        <div className="relative flex flex-col items-center justify-end h-full">
+
+                          {/* angka mengikuti tinggi bar */}
+                          <span
+                            className="absolute text-sm md:text-base font-bold text-black-600"
+                            style={{ bottom: `calc(${maleHeight}% + 6px)` }}
+                          >
+                            {stat.male}
+                          </span>
+
+                          <div
+                            className="w-14 md:w-16 bg-blue-500 rounded-lg"
+                            style={{ height: `${Math.max(maleHeight, 8)}%` }}
+                          ></div>
+
+                        </div>
+                        <span className="text-[16px] mt-1 text-blue-600 font-bold">M</span>
+                      </div>
+
                     </div>
 
-
-                    {/* Category name */}
-                    <div className="mt-6 text-gray-900 font-black text-[10px] md:text-xs tracking-widest text-center uppercase leading-tight h-10 flex items-center justify-center">
+                    {/* Category Name */}
+                    <div className="mt-4 text-gray-900 font-black text-[12px] text-sm md:text-base text-center uppercase">
                       {stat.name}
                     </div>
+
                   </div>
                 );
               })}
@@ -86,7 +115,7 @@ const ResourceSection: React.FC = () => {
             <div className="h-0.5 bg-gray-100 w-full mb-6"></div>
 
             <div className="flex items-center justify-center">
-              <span className="inline-flex items-center text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-gray-400">
+              <span className="inline-flex items-center text-[12px] text-sm md:text-base font-black uppercase tracking-[0.3em] text-gray-400">
                 <span className="w-4 h-4 bg-red-600 rounded shadow-sm mr-3"></span>
                 {t.annualPoolLabel}
               </span>

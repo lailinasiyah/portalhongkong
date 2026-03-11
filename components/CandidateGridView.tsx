@@ -49,7 +49,7 @@ const CandidateGridView: React.FC<CandidateGridViewProps> = ({
     (c: any) => String(c.id) === String(categoryId)
   );
 
-  // use fetch to get data from api http://localhost/rekrutment-filemanager/applicant?category_id=4
+  // use fetch to get data from api http://localhost/hongkongrekrutment-filemanager/applicant?category_id=4
   const [candidates, setCandidates] = useState<CandidateApi[]>([]);
   useEffect(() => {
     if (!categoryId) return;

@@ -6,7 +6,8 @@
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /rekrutment-filemanager/
+    RewriteBase /hongkongrekrutment-filemanager/
+    
 
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
