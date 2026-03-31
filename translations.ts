@@ -5,7 +5,7 @@ export const UI_TRANSLATIONS = {
   EN: {
     welcome: "Welcome",
     welcomeBadge: "Welcome",
-    subWelcome: "Indonesian Mainpower Agency",
+    subWelcome: "Indonesian Manpower Recruitment Agency",
     logout: "Logout",
     viewDetails: "View Details",
     candidatesTitle: "List Of Candidates",
@@ -61,7 +61,7 @@ export const UI_TRANSLATIONS = {
   HK: {
     welcome: "歡迎",
     welcomeBadge: "歡迎",
-    subWelcome: "印尼人力資源局",
+    subWelcome: "印尼人力資源招聘公司",
     logout: "登出",
     viewDetails: "查看詳情",
     candidatesTitle: "候選人名單",

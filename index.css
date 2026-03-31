@@ -1,0 +1,10 @@
+@keyframes gradientMove {
+  0% { background-position: 0% }
+  50% { background-position: 100% }
+  100% { background-position: 0% }
+}
+
+.animate-gradient{
+  background-size:200% auto;
+  animation:gradientMove 6s linear infinite;
+}

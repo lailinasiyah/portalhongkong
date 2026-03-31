@@ -1,42 +1,79 @@
-
-import React from 'react';
-import { useLanguage } from '../LanguageContext';
+import React, { useRef } from "react";
+import { useLanguage } from "../LanguageContext";
+import { motion, useScroll, useTransform } from "framer-motion";
 
 const Hero: React.FC = () => {
   const { t } = useLanguage();
+  const ref = useRef(null);
+
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end start"]
+  });
+
+  // Parallax transforms
+  const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "40%"]);
+  const textY = useTransform(scrollYProgress, [0, 1], ["0%", "120%"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
   return (
-    <div className="relative h-[70vh] md:h-[85vh] w-full overflow-hidden flex items-center justify-center text-center px-4">
-      {/* Background with Turkey-themed image (Cappadocia) */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-fixed transition-opacity duration-1000"
-        style={{ 
-          backgroundImage: `url('https://images.unsplash.com/photo-1542189412744-bfabf27522ee?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')`,
-        }}
-      >
-        {/* Transparent Overlay - Not too thick, allows Turkey theme to show through */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-black/60 backdrop-blur-[2px]"></div>
-        
-        {/* Subtle Red/White tint to match theme */}
-        <div className="absolute inset-0 bg-red-900/10 mix-blend-multiply"></div>
-      </div>
+    <section
+      ref={ref}
+      className="relative h-[85vh] md:h-[95vh] w-full flex items-center justify-center overflow-hidden"
+    >
 
-      <div className="relative z-10 max-w-6xl mx-auto text-white mt-12">
-        <h1 className="text-4xl md:text-7xl lg:text-7xl font-black mb-4 drop-shadow-2xl tracking-tighter leading-none">
-          PT. MITRA SINERGI SUKSES
+      {/* Parallax Background */}
+      <motion.div
+        style={{ y: backgroundY }}
+        className="absolute inset-0 scale-110"
+      >
+      <div
+        className="w-full h-full bg-cover bg-center"
+        style={{
+          backgroundImage: "url('/assets/bidangkerja.webp')"
+        }}
+      />
+      </motion.div>
+
+      {/* Dark overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/40 to-black/70"></div>
+
+      {/* Hero Content */}
+      <motion.div
+        style={{ y: textY, opacity }}
+        className="relative z-10 max-w-5xl mx-auto px-8 py-12 text-center rounded-3xl backdrop-blur-xl bg-white/10 border border-white/20 shadow-2xl"
+      >
+
+        {/* Title */}
+        <h1 className="text-4xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tight mb-6">
+          <span className="bg-gradient-to-r from-white via-red-400 to-white bg-clip-text text-transparent animate-gradient">
+            PT. MITRA SINERGI SUKSES
+          </span>
         </h1>
-        <h2 className="text-2xl md:text-5xl font-bold mb-8 drop-shadow-lg text-red-600 opacity-100 uppercase tracking-tight">
+
+        {/* Subtitle */}
+        <h2 className="text-xl md:text-3xl font-semibold uppercase tracking-[0.25em] text-red-500 mb-8">
           {t.orgSub}
         </h2>
-        <div className="w-24 h-1.5 bg-red-600 mx-auto mb-8 rounded-full shadow-lg"></div>
-        <p className="text-sm md:text-xl font-medium max-w-3xl mx-auto opacity-90 leading-relaxed drop-shadow-md">
+
+        {/* Divider */}
+        <div className="flex items-center justify-center mb-8">
+          <div className="w-16 h-[1px] bg-white/40"></div>
+          <div className="w-10 h-[4px] bg-red-600 mx-3 rounded-full"></div>
+          <div className="w-16 h-[1px] bg-white/40"></div>
+        </div>
+
+        {/* Description */}
+        <p className="text-sm md:text-lg text-gray-200 max-w-3xl mx-auto leading-relaxed">
           {t.subWelcome}
         </p>
-      </div>
-      
-      {/* Bottom fade for smoother transition to next section */}
+
+      </motion.div>
+
+      {/* Bottom fade */}
       <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white to-transparent"></div>
-    </div>
+
+    </section>
   );
 };
 

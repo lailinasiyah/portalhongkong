@@ -227,14 +227,14 @@ Thank you.
         <div className="flex items-center space-x-2">
         <button
           onClick={exportAllSheetsToExcel}
-          className="flex items-center px-3 py-1.5 bg-green-600 text-white text-[10px] font-black rounded hover:bg-green-700 transition-colors shadow-sm"
+          className="flex items-center px-3 py-1.5 bg-green-600 text-white text-xs font-black rounded hover:bg-green-700 transition-colors shadow-sm"
         >
           Download Excel
         </button>
 
         <button
           onClick={onBack}
-          className="flex items-center px-4 py-1.5 bg-red-600 text-white text-[10px] font-black rounded hover:bg-red-700 transition-colors shadow-sm"
+          className="flex items-center px-4 py-1.5 bg-red-600 text-white text-xs font-black rounded hover:bg-red-700 transition-colors shadow-sm"
         >
           {t.backToHome}
         </button>
@@ -244,30 +244,32 @@ Thank you.
       </div>
 
       {/* TABLE */}
-      <main className="flex-grow overflow-auto relative">
-        <table className="w-full border-collapse min-w-[1200px] text-[11px]">
-          <thead className="sticky top-0 z-10 bg-[#f8f9fa]">
-            <tr className="bg-[#e8eaed]">
+      <main className="flex-grow overflow-x-auto overflow-y-auto relative">
+        <table className="w-full border-collapse min-w-[1200px] text-sm whitespace-nowrap">
+          <thead className="bg-[#FFD8A8] text-sm font-bold text-gray-800">
+            <tr className="bg-[#FFD8A8]">
 
               <th className="border px-4 py-2">{t.colNo}</th>
               <th className="border px-4 py-2">{t.colName}</th>
               <th className="border px-4 py-2">{t.colSex}</th>
               <th className="border px-4 py-2">{t.colAge}</th>
-              <th className="border px-4 py-2">Weight</th>
-              <th className="border px-4 py-2">Height</th>
-              <th className="border px-4 py-2">Marital</th>
-              <th className="border px-4 py-2">Last Education</th>
+              <th className="border px-4 py-2">WEIGHT</th>
+              <th className="border px-4 py-2">HEIGHT</th>
+              <th className="border px-4 py-2">MARITAL</th>
+              <th className="border px-4 py-2">LAST EDUCATION</th>
               <th className="border px-4 py-2">{t.colPassport}</th>
               <th className="border px-4 py-2">{t.colCvLink}</th>
               <th className="border px-4 py-2">{t.colVideoLink}</th>
-              <th className="border px-4 py-2">{t.colCvStatus}</th>
+              {/* <th className="border px-4 py-2">{t.colCvStatus}</th> */}
             </tr>
           </thead>
           <tbody>
             {filteredCandidates.map((c, i) => (
-              <tr key={c.id} className="hover:bg-gray-100">
+              <tr key={c.id} className="hover:bg-gray-100 text-sm">
                 <td className="border px-4">{i + 1}</td>
-                <td className="border px-4 font-bold">{c.name}</td>
+                <td className="border px-4 font-bold whitespace-nowrap min-w-[220px]">
+                  {c.name}
+                </td>
                 <td className="border px-4">{c.sex}</td>
                 <td className="border px-4">{calculateAge(c.birth_date)}</td>
                 <td className="border px-4">
@@ -289,13 +291,13 @@ Thank you.
                     ? c.last_education.toUpperCase()
                     : '-'}
                 </td>
-                <td className="border border-gray-300 px-4 py-2">
+                <td className="border border-gray-300 px-4 py-2 text-center">
                   {c.document?.passport?.available ? (
-                    <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-tight bg-blue-100 text-blue-600`}>
+                    <span className="inline-flex items-center justify-center px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wide bg-blue-100 text-blue-700">
                       AVAILABLE
                     </span>
                   ) : (
-                    <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-tight bg-yellow-100 text-yellow-700`}>
+                    <span className="inline-flex items-center justify-center px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wide bg-yellow-100 text-yellow-700">
                       NOT AVAILABLE
                     </span>
                   )}
@@ -303,52 +305,85 @@ Thank you.
                 <td className="border border-gray-300 px-4 py-2 text-center">
                   {c.document?.cv?.available ? (
                     <button
-                      onClick={() => setPreview({
-                        type: 'pdf',
-                        url: buildPreviewUrl(c.document.cv.file_path),
-                        title: `${c.name} - CV`
-                      })}
-
-                      className="p-1.5 bg-gray-100 hover:bg-blue-600 text-gray-400 hover:text-white rounded transition-all shadow-sm"
+                      onClick={() =>
+                        setPreview({
+                          type: "pdf",
+                          url: buildPreviewUrl(c.document.cv.file_path),
+                          title: `${c.name} - CV`,
+                        })
+                      }
+                      className="flex items-center justify-center gap-1 px-3 py-1.5 bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white rounded-md transition-all shadow-sm text-xs font-semibold"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        />
                       </svg>
-                      <span className="ml-1">Ready</span>
+
+                      Ready
                     </button>
-                  ) : <span className="text-gray-300">
-                    Not yet
-                  </span>}
+                  ) : (
+                    <span className="text-gray-400 text-xs font-semibold">
+                      Not yet
+                    </span>
+                  )}
                 </td>
-                <td className="border border-gray-300 px-4 py-2 text-center">
+                <td className="border border-gray-300 px-4 py-2">
                   {c.document?.video?.available ? (
-                    <button
-                      onClick={() => setPreview({
-                        type: 'video',
-                        url: buildPreviewUrl(c.document.video.file_path),
-                        title: `${c.name} - Video Preview`
-                      })}
-
-                      className="p-1.5 bg-gray-100 hover:bg-red-600 text-gray-400 hover:text-white rounded transition-all shadow-sm"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                      </svg>
-                      <span className="ml-1">Ready</span>
-                    </button>
-                  ) : <span className="text-gray-300">Not yet</span>}
+                    <div className="flex justify-center items-center">
+                      <button
+                        onClick={() =>
+                          setPreview({
+                            type: "video",
+                            url: buildPreviewUrl(c.document.video.file_path),
+                            title: `${c.name} - Video Preview`,
+                          })
+                        }
+                        className="flex items-center gap-1 px-3 py-1.5 bg-red-100 text-red-700 hover:bg-red-600 hover:text-white rounded-md transition-all shadow-sm text-xs font-semibold"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                          />
+                        </svg>
+                        Ready
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex justify-center items-center">
+                      <span className="text-gray-400 text-xs font-semibold">
+                        Not yet
+                      </span>
+                    </div>
+                  )}
                 </td>
-                <td className="border border-gray-300 px-4 py-2 text-center">
+                {/* <td className="border border-gray-300 px-4 py-2 text-center">
                   {c.document?.cv?.available ? (
-                    <span className="px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest bg-green-100 text-green-700">
+                    <span className="px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest bg-green-100 text-green-700">
                       AVAILABLE
                     </span>
                   ) : (
-                    <span className="px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest bg-red-100 text-red-700">
+                    <span className="px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest bg-red-100 text-red-700">
                       NOT AVAILABLE
                     </span>
                   )}
-                </td>
+                </td> */}
               </tr>
             ))}
           </tbody>
@@ -372,7 +407,7 @@ Thank you.
             <button
               key={cat.id}
               onClick={() => setActiveSheetId(cat.id)}
-              className={`px-4 py-1.5 text-[10px] font-bold uppercase tracking-tight rounded-t transition-colors ${activeSheetId === cat.id
+              className={`px-4 py-1.5 text-xs font-bold uppercase tracking-tight rounded-t transition-colors ${activeSheetId === cat.id
                 ? 'bg-white border-x border-t border-gray-300 text-blue-800'
                 : 'hover:bg-gray-200 text-gray-500'
                 }`}
@@ -443,7 +478,7 @@ Thank you.
 
             <button
               onClick={() => setWaPopup(null)}
-              className="mt-4 w-full text-[10px] text-gray-500 hover:text-gray-700"
+              className="mt-4 w-full text-xs text-gray-500 hover:text-gray-700"
             >
               Cancel
             </button>

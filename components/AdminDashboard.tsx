@@ -726,11 +726,9 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                     className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none font-bold"
                   >
                     <option value="">Select Education</option>
-                    <option value="SD">SD</option>
-                    <option value="SMP">SMP</option>
-                    <option value="SMA">SMA</option>
-                    <option value="DIPLOMA">DIPLOMA</option>
-                    <option value="SARJANA">SARJANA</option>
+                    <option value="High School">High School</option>
+                    <option value="Diploma">Diploma</option>
+                    <option value="Bachelor’s Degree">Bachelor’s Degree</option>
                   </select>
                 </div>
 
