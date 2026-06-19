@@ -14,3 +14,10 @@ export function getApiBaseUrl() {
     // selain itu ambil dari .env
     return process.env.VITE_API_URL;
 }
+
+export function buildDocumentUrl(filePath: string) {
+    const normalizedPath = filePath.split('/').filter(Boolean);
+    const encodedPath = normalizedPath.map((part) => encodeURIComponent(part)).join('/');
+
+    return `${getApiBaseUrl()}/document/${encodedPath}`;
+}

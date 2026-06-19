@@ -9,6 +9,26 @@ Flight::group('/auth', function () {
 
     /**
      * =========================
+     * CURRENT USER
+     * GET /auth/me
+     * =========================
+     */
+    Flight::route('GET /me', function () {
+        if (!isset($_SESSION['auth'])) {
+            Flight::halt(401, 'Not logged in');
+        }
+
+        Flight::json([
+            'user' => [
+                'id' => $_SESSION['auth']['id'],
+                'username' => $_SESSION['auth']['username'],
+                'role' => $_SESSION['auth']['role']
+            ]
+        ]);
+    });
+
+    /**
+     * =========================
      * LOGIN
      * POST /auth/login
      * =========================

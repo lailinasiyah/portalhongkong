@@ -167,8 +167,8 @@ Flight::group('/applicant', function () use ($pdo) {
 
         $stmt = $pdo->prepare("
             INSERT INTO applicant 
-            (name, category_id, birth_date, sex, weight, height, marital_status, last_education, created_by)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            (name, category_id, birth_date, sex, weight, height, marital_status, last_education, candidate_status, reserved, created_by)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
 
         $stmt->execute([
@@ -180,6 +180,8 @@ Flight::group('/applicant', function () use ($pdo) {
                     isset($body->height) ? (int)$body->height : null,
                     $body->marital_status ?? null,
                     $body->last_education ?? null,
+                    $body->candidate_status ?? 'Available for Application',
+                    $body->reserved ?? 'Not Available',
                 $body->created_by ?? null
         ]);
 
@@ -209,6 +211,8 @@ Flight::group('/applicant', function () use ($pdo) {
                 height = ?,
                 marital_status = ?,
                 last_education = ?,
+                candidate_status = ?,
+                reserved = ?,
                 updated_at = NOW()
             WHERE id = ?
         ");
@@ -222,6 +226,8 @@ Flight::group('/applicant', function () use ($pdo) {
             isset($body->height) ? (int)$body->height : null,
             $body->marital_status ?? null,
             $body->last_education ?? null,
+            $body->candidate_status ?? 'Available for Application',
+            $body->reserved ?? 'Not Available',
             $id
         ]);
 

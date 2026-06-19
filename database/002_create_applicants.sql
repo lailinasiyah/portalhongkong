@@ -4,6 +4,8 @@ CREATE TABLE IF NOT EXISTS applicant (
     category_id INT NOT NULL,
     birth_date DATE NULL,
     sex ENUM('M','F') NULL,
+    candidate_status VARCHAR(100) NULL DEFAULT 'Available for Application',
+    reserved VARCHAR(20) NULL DEFAULT 'Not Available',
     phone VARCHAR(20) NULL,
     email VARCHAR(100) NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

@@ -36,20 +36,9 @@ const CategorySection: React.FC = () => {
       <div className="container mx-auto px-4 text-center relative z-10">
         {/* Call to Action Box - Color matched to active buttons */}
         <div className="inline-block bg-white border-2 border-dashed border-red-200 rounded-2xl shadow-sm py-6 px-10 mb-16 max-w-4xl w-full md:w-auto">
-          <div className="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">
-            <span className="text-gray-900 font-bold text-lg md:text-xl">
-              {t.candidatePrompt.split(',')[0]},
-            </span>
-            {/* Static label colored same as active buttons (blue-700) */}
-            <div
-              className="px-6 py-1.5 text-xs md:text-sm font-medium rounded shadow-md bg-blue-700 text-white cursor-default whitespace-nowrap select-none"
-            >
-              {t.viewDetails}
-            </div>
-            <span className="text-gray-900 font-bold text-lg md:text-xl">
-              {t.candidatePrompt.split(',').slice(1).join(',')}
-            </span>
-          </div>
+          <p className="text-gray-900 font-bold text-lg md:text-xl">
+            {t.candidatePrompt.replace(/[,，]/g, '')}
+          </p>
         </div>
 
         {/* Category Grid - 2 columns per row */}

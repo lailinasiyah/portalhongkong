@@ -72,7 +72,7 @@ export const CATEGORIES = [
   {
     titleEn: 'Domestic Helper',
     titleTr: '家庭傭工',
-    imageUrl: '/assets/bidangkerja.webp',
+    imageUrl: '/assets/art.webp',
   },
   {
     titleEn: 'House Keeper',

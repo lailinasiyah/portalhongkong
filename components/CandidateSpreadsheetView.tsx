@@ -4,8 +4,9 @@ import { useData } from '../DataContext';
 import { useAuth } from '../AuthContext';
 import { Candidate } from '../types';
 import PreviewModal from './PreviewModal';
-import { getApiBaseUrl } from '../utils/api';
+import { buildDocumentUrl, getApiBaseUrl } from '../utils/api';
 import * as XLSX from 'xlsx';
+import { useNavigate } from 'react-router-dom';
 
 interface CandidateSpreadsheetViewProps {
   onBack: () => void;
@@ -19,6 +20,7 @@ const CandidateSpreadsheetView: React.FC<CandidateSpreadsheetViewProps> = ({
   const { t } = useLanguage();
   const { addCategory, updateCandidate } = useData();
   const { isAuthenticated, user } = useAuth();
+  const navigate = useNavigate();
 
   const [refCategories, setRefCategories] = useState<any[]>([]);
   const [activeSheetId, setActiveSheetId] = useState<number | null>(null);
@@ -50,10 +52,7 @@ const CandidateSpreadsheetView: React.FC<CandidateSpreadsheetViewProps> = ({
 
   // helper getdoc
   const getDoc = (candidate: any, type: string) =>
-    candidate.document?.find((d: any) => d.typedoc === type); const buildPreviewUrl = (filePath: string) => {
-      const api = process.env.VITE_API_URL;
-      return `${api}/document${filePath}`;
-    };
+    candidate.document?.find((d: any) => d.typedoc === type);
 
 
   const isAdmin = isAuthenticated && user?.role === 'admin';
@@ -162,6 +161,8 @@ Thank you.
           Weight: c.weight,
           Height: c.height,
           Marital_Status: c.marital_status,
+          Candidate_Status: c.candidate_status,
+          Reserved: c.reserved,
         Passport: c.document?.passport?.available
           ? 'READY'
           : 'NOT READY',
@@ -245,7 +246,7 @@ Thank you.
 
       {/* TABLE */}
       <main className="flex-grow overflow-x-auto overflow-y-auto relative">
-        <table className="w-full border-collapse min-w-[1200px] text-sm whitespace-nowrap">
+        <table className="w-full border-collapse min-w-[1450px] text-sm whitespace-nowrap">
           <thead className="bg-[#FFD8A8] text-sm font-bold text-gray-800">
             <tr className="bg-[#FFD8A8]">
 
@@ -258,6 +259,8 @@ Thank you.
               <th className="border px-4 py-2">MARITAL</th>
               <th className="border px-4 py-2">LAST EDUCATION</th>
               <th className="border px-4 py-2">{t.colPassport}</th>
+              <th className="border px-4 py-2">CANDIDATE STATUS</th>
+              <th className="border px-4 py-2">RESERVED</th>
               <th className="border px-4 py-2">{t.colCvLink}</th>
               <th className="border px-4 py-2">{t.colVideoLink}</th>
               {/* <th className="border px-4 py-2">{t.colCvStatus}</th> */}
@@ -303,12 +306,34 @@ Thank you.
                   )}
                 </td>
                 <td className="border border-gray-300 px-4 py-2 text-center">
+                  <span className="inline-flex items-center justify-center px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wide bg-blue-50 text-blue-700">
+                    {c.candidate_status || 'Available for Application'}
+                  </span>
+                </td>
+                <td className="border border-gray-300 px-4 py-2 text-center">
+                  {isAdmin && c.reserved === 'Available' ? (
+                    <button
+                      onClick={() => navigate(`/candidate/${c.id}/reserved`)}
+                      className="inline-flex items-center justify-center px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wide bg-green-100 text-green-700 hover:bg-green-600 hover:text-white transition-colors"
+                    >
+                      {c.reserved}
+                    </button>
+                  ) : (
+                    <span className={`inline-flex items-center justify-center px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wide ${c.reserved === 'Available'
+                      ? 'bg-green-100 text-green-700'
+                      : 'bg-gray-100 text-gray-600'
+                      }`}>
+                      {c.reserved || 'Not Available'}
+                    </span>
+                  )}
+                </td>
+                <td className="border border-gray-300 px-4 py-2 text-center">
                   {c.document?.cv?.available ? (
                     <button
                       onClick={() =>
                         setPreview({
                           type: "pdf",
-                          url: buildPreviewUrl(c.document.cv.file_path),
+                          url: buildDocumentUrl(c.document.cv.file_path),
                           title: `${c.name} - CV`,
                         })
                       }
@@ -343,7 +368,7 @@ Thank you.
                         onClick={() =>
                           setPreview({
                             type: "video",
-                            url: buildPreviewUrl(c.document.video.file_path),
+                            url: buildDocumentUrl(c.document.video.file_path),
                             title: `${c.name} - Video Preview`,
                           })
                         }

@@ -2,9 +2,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useData } from '../DataContext';
 import { Candidate, CandidateApi } from '../types';
-import { getApiBaseUrl } from '../utils/api';
+import { buildDocumentUrl, getApiBaseUrl } from '../utils/api';
 
 const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
+  const candidateStatusOptions = [
+    'Available for Application',
+    'Registered Support Organization Interview Coordination',
+    'Company Interview Scheduling',
+    'Waiting for Company Interview Results',
+  ];
+  const reservedOptions = ['Not Available', 'Available'];
+
   const [categories, setCategories] = useState([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
@@ -62,6 +70,8 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     height: 0,
     maritalStatus: 'single',
     lasteducation: '',
+    candidateStatus: candidateStatusOptions[0],
+    reserved: reservedOptions[0],
     passportStatus: 'Ready',
     cvAvailable: true
   });
@@ -117,6 +127,8 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         height: formData.height,
         marital_status: formData.maritalStatus,
         last_education: formData.lasteducation,
+        candidate_status: formData.candidateStatus,
+        reserved: formData.reserved,
         created_by: 1
       }),
     });
@@ -162,25 +174,27 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       nameEn: c.name,
       nameLocal: c.name_local || '',
       photoUrl: c.document?.photo?.file_path
-        ? `${api}/document${c.document.photo.file_path}`
+        ? buildDocumentUrl(c.document.photo.file_path)
         : '',
       resumeUrl: c.document?.cv?.file_path
-        ? `${api}/document${c.document.cv.file_path}`
+        ? buildDocumentUrl(c.document.cv.file_path)
         : '',
       videoUrl: c.document?.video?.file_path
-        ? `${api}/document${c.document.video.file_path}`
+        ? buildDocumentUrl(c.document.video.file_path)
         : '',
       certificateUrl: c.document?.certificate?.file_path
-        ? `${api}/document${c.document.certificate.file_path}`
+        ? buildDocumentUrl(c.document.certificate.file_path)
         : '',
       passportUrl: c.document?.passport?.file_path
-        ? `${api}/document${c.document.passport.file_path}`
+        ? buildDocumentUrl(c.document.passport.file_path)
         : '',
       sex: c.sex,
       weight: c.weight || 0,
       height: c.height || 0,
       maritalStatus: c.marital_status || 'single',
       lasteducation: c.last_education || '',
+      candidateStatus: c.candidate_status || candidateStatusOptions[0],
+      reserved: c.reserved || reservedOptions[0],
       age: calculateAge(c.birth_date),
       passportStatus: c.passport_status,
       cvAvailable: c.document?.cv?.available ?? false,
@@ -303,6 +317,8 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         height: data.height,
         marital_status: data.maritalStatus,
         last_education: data.lasteducation,
+        candidate_status: data.candidateStatus,
+        reserved: data.reserved,
         passport_status: data.passportStatus,
         updated_by: 1,
       }),
@@ -357,6 +373,8 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         height: 0,
         maritalStatus: 'single',
         lasteducation: '',
+        candidateStatus: candidateStatusOptions[0],
+        reserved: reservedOptions[0],
         passportStatus: 'Ready',
         cvAvailable: true,
         birthDate: '',
@@ -529,6 +547,13 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
               passportUrl: '',
               sex: 'Female',
               age: 20,
+              weight: 0,
+              height: 0,
+              maritalStatus: 'single',
+              lasteducation: '',
+              candidateStatus: candidateStatusOptions[0],
+              reserved: reservedOptions[0],
+              birthDate: '',
               passportStatus: 'Ready',
               cvAvailable: true
             });
@@ -548,6 +573,8 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                   <th className="px-6 py-4">Photo</th>
                   <th className="px-6 py-4">Candidate Info</th>
                   <th className="px-6 py-4">Category</th>
+                  <th className="px-6 py-4">Candidate Status</th>
+                  <th className="px-6 py-4">Reserved</th>
                   <th className="px-6 py-4">Status Docs</th>
                   <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
@@ -555,7 +582,7 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
               <tbody className="divide-y divide-gray-100">
                 {dataApplicant.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-6 py-12 text-center text-gray-400 font-medium italic">No candidates found. Start by adding one.</td>
+                    <td colSpan={7} className="px-6 py-12 text-center text-gray-400 font-medium italic">No candidates found. Start by adding one.</td>
                   </tr>
                 ) : (
                   dataApplicant.map(c => (
@@ -564,7 +591,7 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                         <img
                           src={
                             c.document?.photo?.available
-                              ? `${api}/document${c.document.photo.file_path}`
+                              ? buildDocumentUrl(c.document.photo.file_path)
                               : "https://via.placeholder.com/40"
                           }
                           className="w-10 h-10 rounded-full object-cover border border-gray-200 shadow-sm"
@@ -579,6 +606,19 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                       <td className="px-6 py-4">
                         <span className="text-[10px] font-black bg-gray-100 text-gray-600 px-2 py-1 rounded uppercase tracking-widest">
                           {c.category_name}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-[10px] font-black bg-blue-50 text-blue-700 px-2 py-1 rounded uppercase tracking-tight">
+                          {c.candidate_status || candidateStatusOptions[0]}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`text-[10px] font-black px-2 py-1 rounded uppercase tracking-tight ${c.reserved === 'Available'
+                          ? 'bg-green-50 text-green-700'
+                          : 'bg-gray-100 text-gray-500'
+                          }`}>
+                          {c.reserved || reservedOptions[0]}
                         </span>
                       </td>
                       <td className="px-6 py-4">
@@ -729,6 +769,40 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                     <option value="High School">High School</option>
                     <option value="Diploma">Diploma</option>
                     <option value="Bachelor’s Degree">Bachelor’s Degree</option>
+                  </select>
+                </div>
+
+                <div className="col-span-2">
+                  <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">
+                    Candidate Status
+                  </label>
+                  <select
+                    value={formData.candidateStatus}
+                    onChange={e =>
+                      setFormData({ ...formData, candidateStatus: e.target.value })
+                    }
+                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none font-bold"
+                  >
+                    {candidateStatusOptions.map(status => (
+                      <option key={status} value={status}>{status}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="col-span-2 md:col-span-1">
+                  <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">
+                    Reserved
+                  </label>
+                  <select
+                    value={formData.reserved}
+                    onChange={e =>
+                      setFormData({ ...formData, reserved: e.target.value })
+                    }
+                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none font-bold"
+                  >
+                    {reservedOptions.map(option => (
+                      <option key={option} value={option}>{option}</option>
+                    ))}
                   </select>
                 </div>
 

@@ -9,7 +9,13 @@ const ResourceSection: React.FC = () => {
       id: 1,
       title: "Company Profile (PDF)",
       image: "assets/fix.webp",
-      link: "https://drive.google.com/file/d/1W6S1PR4i6CT1s9LfkPC55pwmHT6RiAZT/view?usp=drive_link",
+      link: "https://drive.google.com/file/d/1Z3hDLruRXxQ1P1eDP7wiAQu-n7KqszPD/view?usp=sharing",
+    },
+    {
+      id: 2,
+      title: "Company Introduction (Video)",
+      image: "assets/company-video.webp",
+      link: "https://drive.google.com/file/d/1f9kuhV2dNW7C4447L8PFJJf-gMA_i37O/view?usp=sharing",
     },
   ];
 
@@ -18,7 +24,7 @@ const ResourceSection: React.FC = () => {
       <div className="container mx-auto px-4">
 
         {/* Center Container */}
-        <div className="flex justify-center">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
 
           {resources.map((item) => (
             <div

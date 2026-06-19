@@ -1,8 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Candidate, CategoryItem, CandidateApi } from './types';
 import { MOCK_CANDIDATES, CATEGORIES } from './constants';
-const VITE_API_URL = import.meta.env.VITE_API_URL;
-import { getApiBaseUrl } from './utils/api';
+import { buildDocumentUrl, getApiBaseUrl } from './utils/api';
 
 interface DataContextType {
   candidates: CandidateApi[];
@@ -56,7 +55,7 @@ const normalizeDocument = (doc: any) => {
     available: Boolean(doc.available),
     file_path: doc.file_path ?? null,
     file_url: doc.file_path
-      ? `${VITE_API_URL}${doc.file_path}`
+      ? buildDocumentUrl(doc.file_path)
       : null,
   };
 };

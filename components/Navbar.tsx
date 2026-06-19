@@ -18,7 +18,7 @@ const Navbar: React.FC<NavbarProps> = ({ onAdminClick }) => {
       <div className="flex items-center space-x-3">
         <div className=" p-1 rounded-full shadow-lg overflow-hidden w-16 h-16 md:w-24 md:h-24 flex items-center justify-center">
           <img
-            src="assets/favicon.png"
+            src="assets/mitra.png"
             alt="LPK MSS Logo"
             className="w-full h-full object-contain"
           />

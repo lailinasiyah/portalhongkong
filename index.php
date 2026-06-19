@@ -1,7 +1,34 @@
 <?php
 
-header('X-TEST-CORS: MASUK');
-header("Access-Control-Allow-Credentials: true");
+function sendCorsHeaders(): void
+{
+    $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+    $allowedOrigins = [
+        'http://localhost',
+        'http://127.0.0.1',
+    ];
+
+    $isAllowedOrigin = in_array($origin, $allowedOrigins, true)
+        || preg_match('#^http://localhost:30\d{2}$#', $origin)
+        || preg_match('#^http://127\.0\.0\.1:30\d{2}$#', $origin)
+        || preg_match('#^http://192\.168\.\d+\.\d+:30\d{2}$#', $origin);
+
+    if ($isAllowedOrigin) {
+        header("Access-Control-Allow-Origin: {$origin}");
+        header('Vary: Origin');
+    }
+
+    header('Access-Control-Allow-Credentials: true');
+    header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+}
+
+sendCorsHeaders();
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(204);
+    exit;
+}
 
 require 'vendor/autoload.php';
 
@@ -28,24 +55,8 @@ session_start();
 // CORS CONFIG
 
 Flight::before('start', function () {
-    $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-
-    if (
-        $origin === 'http://localhost:3000' ||
-        preg_match('#^http://192\.168\.\d+\.\d+:3000$#', $origin)
-    ) {
-        header("Access-Control-Allow-Origin: $origin");
-    }
-
-    header("Access-Control-Allow-Credentials: true");
-    header("Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS");
-    header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+    sendCorsHeaders();
     header("Content-Type: application/json; charset=UTF-8");
-
-    if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-        http_response_code(200);
-        exit;
-    }
 });
 
 
@@ -98,6 +109,7 @@ Flight::set('roles', [
     'admin' => [
         ['method' => '*',    'path' => '/document*'],
         ['method' => '*',    'path' => '/applicant*'],
+        ['method' => '*',    'path' => '/reserved*'],
         ['method' => '*',    'path' => '/member*'],
         ['method' => '*',    'path' => '/auth/logout'],
     ],
@@ -137,6 +149,7 @@ Flight::route('/json', function () {
  */
 require 'function/authentication.php';
 require 'function/applicant.php';
+require 'function/reserved.php';
 require 'function/document.php';
 require 'function/dashboard.php';
 require 'function/refcategory.php';

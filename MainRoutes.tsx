@@ -4,6 +4,7 @@ import CandidateGridView from './components/CandidateGridView';
 import CandidateSpreadsheetView from './components/CandidateSpreadsheetView';
 import AdminDashboard from './components/AdminDashboard';
 import Login from './components/Login';
+import ReservedDetail from './components/ReservedDetail';
 import { useAuth } from './AuthContext';
 import { useNavigate, useParams } from 'react-router-dom';
 import CategorySection from './components/CategorySection';
@@ -43,6 +44,7 @@ const MainRoutes: React.FC = () => {
             <Route path="/" element={<Home />} />
             <Route path="/category/:id" element={<GridWrapper />} />
             <Route path="/spreadsheet" element={<SpreadsheetWrapper />} />
+            {isAdmin && <Route path="/candidate/:id/reserved" element={<ReservedDetail />} />}
             {isAdmin && <Route path="/admin" element={<AdminDashboard onBack={() => navigate('/')} />} />}
             <Route path="*" element={<Navigate to="/" />} />
         </Routes>

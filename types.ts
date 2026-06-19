@@ -28,6 +28,8 @@ export interface Candidate {
   height: 0,
   maritalStatus: 'single',
   lasteducation: string;
+  candidateStatus: string;
+  reserved: string;
   age: number;
   passportStatus: string;
   cvAvailable: boolean;
@@ -44,6 +46,8 @@ export interface CandidateApi {
   height?: number;
   marital_status?: string;
   last_education?: string;
+  candidate_status?: string;
+  reserved?: string;
   passport_status: string;
   category_name?: string;
   document?: {

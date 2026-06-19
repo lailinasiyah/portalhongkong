@@ -1,2 +1,2 @@
 <?php
-echo password_hash('user123', PASSWORD_BCRYPT);
+echo password_hash('@mitra2025!', PASSWORD_BCRYPT);
