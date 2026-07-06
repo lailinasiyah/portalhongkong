@@ -348,6 +348,8 @@ Flight::group('/document', function () {
             'mp4'  => 'video/mp4',
             'webm' => 'video/webm',
             'ogg'  => 'video/ogg',
+            'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'xls'  => 'application/vnd.ms-excel',
         ];
 
         $mime = $mimeMap[$ext] ?? 'application/octet-stream';

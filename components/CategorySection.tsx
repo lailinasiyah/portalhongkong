@@ -34,13 +34,6 @@ const CategorySection: React.FC = () => {
       </div>
 
       <div className="container mx-auto px-4 text-center relative z-10">
-        {/* Call to Action Box - Color matched to active buttons */}
-        <div className="inline-block bg-white border-2 border-dashed border-red-200 rounded-2xl shadow-sm py-6 px-10 mb-16 max-w-4xl w-full md:w-auto">
-          <p className="text-gray-900 font-bold text-lg md:text-xl">
-            {t.candidatePrompt.replace(/[,，]/g, '')}
-          </p>
-        </div>
-
         {/* Category Grid - 2 columns per row */}
         <div className="grid grid-cols-1 gap-8 md:gap-12 max-w-6xl mx-auto justify-items-center">
           {categories.map((item) => (
@@ -76,8 +69,8 @@ const CategorySection: React.FC = () => {
         </div>
 
         {/* Final CTA */}
-        <div className="mt-24 pb-12">
-          <div className="h-px bg-gradient-to-r from-transparent via-red-200 to-transparent mb-12"></div>
+        <div className="mt-16 pb-12">
+          <div className="h-px bg-gradient-to-r from-transparent via-red-200 to-transparent mb-8"></div>
           <p className="text-gray-800 text-xl md:text-2xl font-black mb-6 tracking-tight uppercase">{t.companyWebsite}</p>
           <PortalButton
             onClick={() => window.open('https://mitrasinergisukses.mitragroup.id/', '_blank')}

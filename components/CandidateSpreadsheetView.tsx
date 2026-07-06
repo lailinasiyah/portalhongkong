@@ -26,7 +26,7 @@ const CandidateSpreadsheetView: React.FC<CandidateSpreadsheetViewProps> = ({
   const [activeSheetId, setActiveSheetId] = useState<number | null>(null);
   const [listCandidates, setListCandidates] = useState<any[]>([]);
   const [preview, setPreview] = useState<{
-    type: 'pdf' | 'video';
+    type: 'pdf' | 'video' | 'file';
     url: string;
     title: string;
   } | null>(null);
@@ -115,6 +115,101 @@ const CandidateSpreadsheetView: React.FC<CandidateSpreadsheetViewProps> = ({
 
   const filteredCandidates = listCandidates;
 
+  const formatExperience = (value?: string | number | null) => {
+    const years = Number(String(value ?? '').match(/\d+/)?.[0] ?? 0);
+    if (!years) return '-';
+    return `${years} ${years === 1 ? 'YEAR' : 'YEARS'}`;
+  };
+
+  const formatKeterangan = (value?: string | null) => {
+    const text = String(value ?? '').trim();
+    return text ? text.toUpperCase() : '-';
+  };
+
+  const formatJobDescription = (value?: string | null) => {
+    const text = String(value ?? '').trim();
+    return text ? text.toUpperCase() : '-';
+  };
+
+  const getWorkExperiences = (value: any) => {
+    if (Array.isArray(value)) return value;
+    if (typeof value === 'string' && value.trim()) {
+      try {
+        const parsed = JSON.parse(value);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+    return [];
+  };
+
+  const formatFirstWorkExperienceField = (candidate: any, field: 'remarks' | 'strongPoints') => {
+    const firstExperience = getWorkExperiences(candidate.work_experience)[0];
+    const text = String(firstExperience?.[field] ?? '').trim();
+    return text ? text.toUpperCase() : '-';
+  };
+
+  const formatDate = (value?: string | null) => {
+    const text = String(value ?? '').trim();
+    if (!text) return '';
+
+    const isoMatch = text.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (isoMatch) return `${isoMatch[3]}/${isoMatch[2]}/${isoMatch[1]}`;
+
+    const displayMatch = text.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    return displayMatch ? text : '';
+  };
+
+  const formatDateRange = (fromDate?: string | null, toDate?: string | null) => {
+    const from = formatDate(fromDate);
+    const to = formatDate(toDate);
+
+    if (from && to) return `${from} - ${to}`;
+    return from || to || '-';
+  };
+
+  const formatPassportNote = (value?: string | null) => {
+    const text = String(value ?? '').trim();
+    return text ? text.toUpperCase() : '-';
+  };
+
+  const formatName = (value?: string | null) => {
+    const text = String(value ?? '').trim();
+    return text ? text.toUpperCase() : '-';
+  };
+
+  const handleEditKeterangan = async (candidate: any) => {
+    const nextValue = window.prompt(
+      `Keterangan untuk ${candidate.name}`,
+      candidate.keterangan || ''
+    );
+
+    if (nextValue === null) return;
+    const normalizedValue = nextValue.toUpperCase();
+
+    try {
+      const res = await fetch(`${api}/applicant/${candidate.id}/keterangan`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ keterangan: normalizedValue }),
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to update keterangan');
+      }
+
+      setListCandidates(prev =>
+        prev.map(item =>
+          item.id === candidate.id ? { ...item, keterangan: normalizedValue } : item
+        )
+      );
+    } catch (error) {
+      console.error(error);
+      alert('Gagal menyimpan keterangan');
+    }
+  };
+
 const openWhatsApp = (
   phone: string,
   candidateName: string,
@@ -154,24 +249,28 @@ Thank you.
 
       const rows = candidates.map((c: any, index: number) => ({
         No: index + 1,
-        Name: c.name,
+        Name: formatName(c.name),
         Sex: c.sex,
         Age: calculateAge(c.birth_date),
 
           Weight: c.weight,
           Height: c.height,
           Marital_Status: c.marital_status,
-          Candidate_Status: c.candidate_status,
+          Last_Education: c.last_education,
+          Remarks: formatFirstWorkExperienceField(c, 'remarks'),
+          Strong_Points: formatFirstWorkExperienceField(c, 'strongPoints'),
           Reserved: c.reserved,
         Passport: c.document?.passport?.available
           ? 'READY'
           : 'NOT READY',
+        Passport_Note: formatPassportNote(c.passport_note),
         CV: c.document?.cv?.available
           ? 'AVAILABLE'
           : 'NOT AVAILABLE',
         Video: c.document?.video?.available
           ? 'AVAILABLE'
           : 'NOT AVAILABLE',
+        Keterangan: formatKeterangan(c.keterangan),
       }));
 
       const worksheet = XLSX.utils.json_to_sheet(rows);
@@ -246,7 +345,7 @@ Thank you.
 
       {/* TABLE */}
       <main className="flex-grow overflow-x-auto overflow-y-auto relative">
-        <table className="w-full border-collapse min-w-[1450px] text-sm whitespace-nowrap">
+        <table className="w-full border-collapse min-w-[1850px] text-sm whitespace-nowrap">
           <thead className="bg-[#FFD8A8] text-sm font-bold text-gray-800">
             <tr className="bg-[#FFD8A8]">
 
@@ -258,11 +357,13 @@ Thank you.
               <th className="border px-4 py-2">HEIGHT</th>
               <th className="border px-4 py-2">MARITAL</th>
               <th className="border px-4 py-2">LAST EDUCATION</th>
+              <th className="border px-4 py-2">Remarks 備註</th>
+              <th className="border px-4 py-2">Strong Points</th>
               <th className="border px-4 py-2">{t.colPassport}</th>
-              <th className="border px-4 py-2">CANDIDATE STATUS</th>
               <th className="border px-4 py-2">RESERVED</th>
               <th className="border px-4 py-2">{t.colCvLink}</th>
               <th className="border px-4 py-2">{t.colVideoLink}</th>
+              <th className="border px-4 py-2">KETERANGAN</th>
               {/* <th className="border px-4 py-2">{t.colCvStatus}</th> */}
             </tr>
           </thead>
@@ -271,7 +372,7 @@ Thank you.
               <tr key={c.id} className="hover:bg-gray-100 text-sm">
                 <td className="border px-4">{i + 1}</td>
                 <td className="border px-4 font-bold whitespace-nowrap min-w-[220px]">
-                  {c.name}
+                  {formatName(c.name)}
                 </td>
                 <td className="border px-4">{c.sex}</td>
                 <td className="border px-4">{calculateAge(c.birth_date)}</td>
@@ -294,21 +395,24 @@ Thank you.
                     ? c.last_education.toUpperCase()
                     : '-'}
                 </td>
-                <td className="border border-gray-300 px-4 py-2 text-center">
-                  {c.document?.passport?.available ? (
-                    <span className="inline-flex items-center justify-center px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wide bg-blue-100 text-blue-700">
-                      AVAILABLE
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center justify-center px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wide bg-yellow-100 text-yellow-700">
-                      NOT AVAILABLE
-                    </span>
-                  )}
+                <td className="border px-4 py-2 min-w-[260px] max-w-[320px] whitespace-normal">
+                  {formatFirstWorkExperienceField(c, 'remarks')}
+                </td>
+                <td className="border px-4 py-2 min-w-[260px] max-w-[320px] whitespace-normal">
+                  {formatFirstWorkExperienceField(c, 'strongPoints')}
                 </td>
                 <td className="border border-gray-300 px-4 py-2 text-center">
-                  <span className="inline-flex items-center justify-center px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wide bg-blue-50 text-blue-700">
-                    {c.candidate_status || 'Available for Application'}
-                  </span>
+                  <div className="flex flex-col items-center gap-1">
+                    {c.document?.passport?.available ? (
+                      <span className="inline-flex items-center justify-center px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wide bg-blue-100 text-blue-700">
+                        AVAILABLE
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center justify-center px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wide bg-yellow-100 text-yellow-700">
+                        NOT AVAILABLE
+                      </span>
+                    )}
+                  </div>
                 </td>
                 <td className="border border-gray-300 px-4 py-2 text-center">
                   {isAdmin && c.reserved === 'Available' ? (
@@ -332,7 +436,7 @@ Thank you.
                     <button
                       onClick={() =>
                         setPreview({
-                          type: "pdf",
+                          type: c.document.cv.file_path.toLowerCase().endsWith(".pdf") ? "pdf" : "file",
                           url: buildDocumentUrl(c.document.cv.file_path),
                           title: `${c.name} - CV`,
                         })
@@ -397,6 +501,25 @@ Thank you.
                       </span>
                     </div>
                   )}
+                </td>
+                <td className="border border-gray-300 px-4 py-2 min-w-[240px]">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-xs font-black text-gray-800 whitespace-normal uppercase">
+                      {formatKeterangan(c.keterangan)}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleEditKeterangan(c)}
+                      className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide bg-amber-100 text-amber-700 hover:bg-amber-500 hover:text-white transition-colors"
+                      title="Click here to edit"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.5 7.125L16.875 4.5" />
+                      </svg>
+                      Click here to edit
+                    </button>
+                  </div>
                 </td>
                 {/* <td className="border border-gray-300 px-4 py-2 text-center">
                   {c.document?.cv?.available ? (

@@ -5,7 +5,7 @@ import { useLanguage } from '../LanguageContext';
 interface PreviewModalProps {
   isOpen: boolean;
   onClose: () => void;
-  type: 'pdf' | 'video';
+  type: 'pdf' | 'video' | 'file';
   url: string;
   title: string;
 }
@@ -38,7 +38,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, type, url,
                 className="w-full h-full"
                 title="PDF Preview"
               />
-            ) : (
+            ) : type === 'video' ? (
               <div className="w-full h-full flex items-center justify-center bg-black p-3 md:p-6">
                 <video
                   src={url}
@@ -47,6 +47,23 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, type, url,
                   playsInline
                   className="max-w-full max-h-full w-auto h-auto object-contain bg-black"
                 />
+              </div>
+            ) : (
+              <div className="flex h-full items-center justify-center bg-gray-950 p-6 text-center text-white">
+                <div className="max-w-md rounded-lg border border-white/15 bg-white/10 p-6">
+                  <h4 className="text-base font-black uppercase tracking-widest">Excel CV Ready</h4>
+                  <p className="mt-3 text-sm text-white/75">
+                    Browser tidak bisa menampilkan XLSX inline seperti PDF. Buka file untuk preview di Excel/WPS.
+                  </p>
+                  <a
+                    href={url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-5 inline-flex rounded bg-blue-600 px-5 py-3 text-xs font-black uppercase tracking-widest text-white hover:bg-blue-700"
+                  >
+                    Open CV
+                  </a>
+                </div>
               </div>
           )}
         </div>

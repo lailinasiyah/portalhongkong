@@ -1,0 +1,3 @@
+ALTER TABLE applicant
+ADD COLUMN IF NOT EXISTS experience VARCHAR(255) NULL AFTER last_education,
+ADD COLUMN IF NOT EXISTS keterangan TEXT NULL AFTER experience;

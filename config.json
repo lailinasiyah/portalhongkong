@@ -6,5 +6,8 @@
         "database": "u317381598_sdmhongkong_db",
         "username": "u317381598_asiyah",
         "password": "Mit@sinergi2025"
+    },
+    "convertapi": {
+        "secret": "BlpL030fAgKMuWWBUNAX2yfWwUqVHwgw"
     }
 }

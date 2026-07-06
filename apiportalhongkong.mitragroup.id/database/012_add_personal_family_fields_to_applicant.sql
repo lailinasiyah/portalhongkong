@@ -1,0 +1,11 @@
+ALTER TABLE applicant
+ADD COLUMN IF NOT EXISTS age INT NULL AFTER birth_date,
+ADD COLUMN IF NOT EXISTS religion VARCHAR(100) NULL AFTER age,
+ADD COLUMN IF NOT EXISTS home_address TEXT NULL AFTER religion,
+ADD COLUMN IF NOT EXISTS place_of_birth VARCHAR(150) NULL AFTER home_address,
+MODIFY COLUMN phone VARCHAR(30) NULL,
+ADD COLUMN IF NOT EXISTS husband_name VARCHAR(150) NULL AFTER last_education,
+ADD COLUMN IF NOT EXISTS husband_age INT NULL AFTER husband_name,
+ADD COLUMN IF NOT EXISTS husband_occupation VARCHAR(150) NULL AFTER husband_age,
+ADD COLUMN IF NOT EXISTS number_of_children INT NULL AFTER husband_occupation,
+ADD COLUMN IF NOT EXISTS children_age VARCHAR(100) NULL AFTER number_of_children;

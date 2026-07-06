@@ -117,6 +117,7 @@ Flight::set('roles', [
     'user' => [
         ['method' => 'GET',  'path' => '/document'],
         ['method' => 'GET',  'path' => '/document/*'],
+        ['method' => 'PATCH', 'path' => '/applicant/*/keterangan'],
         ['method' => 'POST', 'path' => '/auth/logout'],
     ],
 ]);

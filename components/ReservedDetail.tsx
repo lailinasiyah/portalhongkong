@@ -5,17 +5,17 @@ import { getApiBaseUrl } from '../utils/api';
 
 const defaultForm = {
   status_reserved: 'Reserved',
-  reserved_date: '2026-06-12',
-  job_order_number: 'JO-2026-001',
-  job_order_date: '2026-06-10',
-  job_position: 'Care Worker',
-  required_count: '5',
-  company_name: 'ABC Care Service',
-  work_location: 'Osaka, Jepang',
-  hongkong_agency_name: 'XYZ Cooperative',
-  interview_date: '2026-06-08',
-  estimated_contract_date: '2026-06-25',
-  reserved_notes: 'Kandidat telah dipilih employer dan menunggu penerbitan kontrak kerja.',
+  reserved_date: '',
+  job_order_number: '',
+  job_order_date: '',
+  job_position: '',
+  required_count: '',
+  company_name: '',
+  work_location: '',
+  hongkong_agency_name: '',
+  interview_date: '',
+  estimated_contract_date: '',
+  reserved_notes: '',
 };
 
 const ReservedDetail: React.FC = () => {
@@ -145,8 +145,11 @@ const ReservedDetail: React.FC = () => {
             <SelectField label="Status Reserved" value={formData.status_reserved} onChange={value => updateField('status_reserved', value)} options={['Reserved', 'Not Reserved']} />
             <InputField label="Tanggal Reserved" type="date" value={formData.reserved_date} onChange={value => updateField('reserved_date', value)} />
 
+            <SectionTitle title="Proses Selanjutnya" />
+            <InputField label="Tanggal Interview" type="date" value={formData.interview_date} onChange={value => updateField('interview_date', value)} />
+            <InputField label="Estimasi Kontrak Terbit" type="date" value={formData.estimated_contract_date} onChange={value => updateField('estimated_contract_date', value)} />
+
             <SectionTitle title="Informasi Job Order" />
-            <InputField label="Nomor Job Order" value={formData.job_order_number} onChange={value => updateField('job_order_number', value)} />
             <InputField label="Tanggal Job Order" type="date" value={formData.job_order_date} onChange={value => updateField('job_order_date', value)} />
             <InputField label="Posisi Pekerjaan" value={formData.job_position} onChange={value => updateField('job_position', value)} />
             <InputField label="Jumlah Kebutuhan" type="number" value={formData.required_count} onChange={value => updateField('required_count', value)} />
@@ -155,10 +158,6 @@ const ReservedDetail: React.FC = () => {
             <InputField label="Nama Perusahaan" value={formData.company_name} onChange={value => updateField('company_name', value)} />
             <InputField label="Lokasi Kerja" value={formData.work_location} onChange={value => updateField('work_location', value)} />
             <InputField label="Nama Agency Hongkong" value={formData.hongkong_agency_name} onChange={value => updateField('hongkong_agency_name', value)} />
-
-            <SectionTitle title="Proses Selanjutnya" />
-            <InputField label="Tanggal Interview" type="date" value={formData.interview_date} onChange={value => updateField('interview_date', value)} />
-            <InputField label="Estimasi Kontrak Terbit" type="date" value={formData.estimated_contract_date} onChange={value => updateField('estimated_contract_date', value)} />
 
             <SectionTitle title="Keterangan" />
             <div className="md:col-span-2">

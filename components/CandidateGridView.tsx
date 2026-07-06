@@ -4,6 +4,7 @@ import { useData } from "../DataContext";
 import PreviewModal from "./PreviewModal";
 import { CandidateApi } from "../types";
 import {
+  ArrowLeftIcon,
   DocumentTextIcon,
   FunnelIcon,
   MagnifyingGlassIcon,
@@ -25,7 +26,7 @@ const CandidateGridView: React.FC<CandidateGridViewProps> = ({
   const { categories } = useData();
 
   const [preview, setPreview] = useState<{
-    type: "pdf" | "video";
+    type: "pdf" | "video" | "file";
     url: string;
     title: string;
   } | null>(null);
@@ -105,8 +106,9 @@ const CandidateGridView: React.FC<CandidateGridViewProps> = ({
       <header className="h-[90px] bg-[#071d2f] flex flex-col items-center justify-center text-center px-4 shadow-[0_12px_30px_rgba(0,0,0,0.18)]">
         <button
           onClick={onBack}
-          className="text-[10px] font-black uppercase tracking-[0.18em] text-blue-200 hover:text-white transition-colors"
+          className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-blue-200 hover:text-white transition-colors"
         >
+          <ArrowLeftIcon className="w-3.5 h-3.5" />
           {t.backToHome}
         </button>
         <h1 className="mt-2 text-lg md:text-xl font-black tracking-tight">
@@ -207,7 +209,7 @@ const CandidateGridView: React.FC<CandidateGridViewProps> = ({
                         <button
                           onClick={() =>
                             setPreview({
-                              type: "pdf",
+                              type: candidate.document!.cv!.file_path.toLowerCase().endsWith(".pdf") ? "pdf" : "file",
                               url: buildDocumentUrl(candidate.document!.cv!.file_path),
                               title: `${candidate.name} - CV`,
                             })
