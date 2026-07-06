@@ -471,7 +471,7 @@ Flight::group('/applicant', function () use ($pdo) {
             'feedingMedication' => 59,
             'pet' => 60,
             'gardening' => 61,
-            'carWashing' => 62,
+            'carWashing' => 61,
         ];
         $activityDetailCells = [
             0 => [
@@ -1203,7 +1203,7 @@ Flight::group('/applicant', function () use ($pdo) {
             'feedingMedication' => 59,
             'pet' => 60,
             'gardening' => 61,
-            'carWashing' => 62,
+            'carWashing' => 61,
         ];
         $activityDetailCells = [
             0 => [
