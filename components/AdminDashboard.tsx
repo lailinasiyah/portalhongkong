@@ -97,6 +97,16 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     const match = String(value ?? '').match(/\d+/);
     return match ? match[0] : '';
   };
+  const sanitizeDownloadName = (value?: string | null) =>
+    String(value ?? '')
+      .trim()
+      .replace(/[<>:"/\\|?*\x00-\x1F]/g, '')
+      .replace(/\s+/g, ' ');
+  const getCvDownloadFilename = (candidate: CandidateApi) => {
+    const reference = sanitizeDownloadName(candidate.reference_no) || 'NO-REF';
+    const name = sanitizeDownloadName(candidate.name) || 'Candidate';
+    return `MH-${reference} ${name}.pdf`;
+  };
   const formatDisplayDate = (value?: string | null) => {
     const text = String(value ?? '').trim();
     if (!text) return '';
@@ -187,6 +197,7 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     certificate: undefined,
     passport: undefined,
   });
+  const [filePreviews, setFilePreviews] = useState<Partial<Record<FileType, string>>>({});
 
   ///////////////////////////////////////
 
@@ -429,6 +440,7 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
   const handleEdit = (c: CandidateApi) => {
     setEditingId(c.id);
+    clearLocalFilePreviews();
 
     setFormData({
       categoryId: c.category_id, // ✅ SEKARANG VALID
@@ -511,6 +523,25 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     passport: 'passportUrl',
   };
 
+  const clearLocalFilePreviews = () => {
+    Object.values(filePreviews).forEach(value => {
+      if (value?.startsWith('blob:')) {
+        URL.revokeObjectURL(value);
+      }
+    });
+    setFilePreviews({});
+  };
+
+  const resetFileSelections = () => {
+    setFiles({
+      photo: undefined,
+      cv: undefined,
+      video: undefined,
+      certificate: undefined,
+      passport: undefined,
+    });
+  };
+
 
 
 
@@ -544,12 +575,20 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
     // 1️⃣ simpan file
     setFiles(prev => ({ ...prev, [type]: file }));
+    const previewUrl = URL.createObjectURL(file);
+    setFilePreviews(prev => {
+      const previousPreview = prev[type];
+      if (previousPreview?.startsWith('blob:')) {
+        URL.revokeObjectURL(previousPreview);
+      }
+      return { ...prev, [type]: previewUrl };
+    });
 
     // 2️⃣ tampilkan nama file / preview di text field
     const preview =
       type === 'photo' || type === 'passport'
-        ? URL.createObjectURL(file) // image preview
-        : file.name; // text preview
+        ? previewUrl
+        : file.name;
 
     const key = fileUrlMap[type];
 
@@ -594,7 +633,8 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     });
 
     if (!res.ok) {
-      throw new Error(`Upload ${type} failed`);
+      const message = await res.text().catch(() => '');
+      throw new Error(message || `Upload ${type} failed`);
     }
   };
 
@@ -739,6 +779,7 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         birthDate: '',
       });
 
+      clearLocalFilePreviews();
       setFiles({
         photo: undefined,
         cv: undefined,
@@ -848,7 +889,7 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         <div className="flex-grow relative">
           <input
             type="text"
-            value={currentValue}
+            value={files[fileType]?.name || currentValue}
             readOnly
             className="w-full p-3 pr-10 bg-gray-50 border border-gray-200 rounded-lg text-xs focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium truncate"
           // placeholder="No file uploaded to Drive yet..."
@@ -890,6 +931,66 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     </div>
   );
 
+  const DocumentPreviewPanel = () => {
+    const previewItems: Array<{
+      type: FileType;
+      label: string;
+      source: string;
+      kind: 'image' | 'video' | 'pdf';
+    }> = [
+        { type: 'photo', label: 'Photo Candidate', source: filePreviews.photo || formData.photoUrl, kind: 'image' },
+        { type: 'video', label: 'Intro Video', source: filePreviews.video || formData.videoUrl, kind: 'video' },
+        { type: 'passport', label: 'Passport Candidate', source: filePreviews.passport || formData.passportUrl, kind: 'image' },
+        { type: 'certificate', label: 'Certificate PDF', source: filePreviews.certificate || formData.certificateUrl, kind: 'pdf' },
+      ].filter(item => Boolean(item.source));
+
+    return (
+      <aside className="border-t border-gray-200 bg-gray-50 p-4 lg:overflow-y-auto lg:border-l lg:border-t-0 lg:p-5">
+        <div className="lg:sticky lg:top-0">
+          <h4 className="mb-4 text-[10px] font-black uppercase tracking-widest text-blue-900">
+            File Preview
+          </h4>
+          {previewItems.length === 0 ? (
+            <div className="flex min-h-[180px] items-center justify-center rounded-lg border border-dashed border-gray-300 bg-white p-4 text-center text-[10px] font-black uppercase tracking-widest text-gray-400">
+              No file selected
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {previewItems.map(item => (
+                <div key={item.type} className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+                  <div className="border-b border-gray-100 px-3 py-2 text-[10px] font-black uppercase tracking-widest text-gray-500">
+                    {item.label}
+                  </div>
+                  {item.kind === 'image' && (
+                    <img
+                      src={item.source}
+                      alt={item.label}
+                      className="h-44 w-full object-contain bg-gray-100"
+                    />
+                  )}
+                  {item.kind === 'video' && (
+                    <video
+                      src={item.source}
+                      controls
+                      className="h-44 w-full bg-black object-contain"
+                    />
+                  )}
+                  {item.kind === 'pdf' && (
+                    <iframe
+                      src={item.source}
+                      title={item.label}
+                      className="h-56 w-full bg-gray-100"
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </aside>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 font-sans relative">
       {/* Toast Notification */}
@@ -916,6 +1017,8 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         </div>
         <button
           onClick={() => {
+            clearLocalFilePreviews();
+            resetFileSelections();
             setIsAdding(true);
             setEditingId(null);
             setActiveFormTab('personal');
@@ -990,13 +1093,14 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                   <th className="px-6 py-4">Passport Note</th>
                   <th className="px-6 py-4">Status Docs</th>
                   <th className="px-6 py-4 text-right">Actions</th>
-                  <th className="px-6 py-4 text-right">Publish</th>
+                  <th className="px-6 py-4 text-center">Publish</th>
+                  <th className="px-6 py-4 text-center">Download CV</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {dataApplicant.length === 0 ? (
                   <tr>
-                    <td colSpan={9} className="px-6 py-12 text-center text-gray-400 font-medium italic">No candidates found. Start by adding one.</td>
+                    <td colSpan={10} className="px-6 py-12 text-center text-gray-400 font-medium italic">No candidates found. Start by adding one.</td>
                   </tr>
                 ) : (
                   dataApplicant.map(c => (
@@ -1063,7 +1167,7 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                         <button onClick={() => handleEdit(c)} className="text-blue-600 font-bold text-[10px] uppercase tracking-widest hover:text-blue-800 underline-offset-4 hover:underline">Edit</button>
                         <button onClick={() => handleDelete(c.id, c.name)} className="text-red-600 font-bold text-[10px] uppercase tracking-widest hover:text-red-800 underline-offset-4 hover:underline">Delete</button>
                       </td>
-                      <td className="px-6 py-4 text-right">
+                      <td className="px-6 py-4 text-center">
                         <button
                           type="button"
                           disabled={publishingId === c.id || !c.document?.photo?.available}
@@ -1073,6 +1177,21 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                         >
                           {publishingId === c.id ? 'Publishing...' : 'Publish'}
                         </button>
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        {c.document?.cv?.available ? (
+                          <a
+                            href={buildDocumentUrl(c.document.cv.file_path)}
+                            download={getCvDownloadFilename(c)}
+                            className="bg-blue-900 text-white px-4 py-2 rounded text-[10px] font-black uppercase tracking-widest hover:bg-blue-800 transition-colors shadow-sm active:scale-95"
+                          >
+                            Download
+                          </a>
+                        ) : (
+                          <span className="cursor-not-allowed rounded bg-gray-200 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                            Download
+                          </span>
+                        )}
                       </td>
                     </tr>
                   ))
@@ -1087,11 +1206,11 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       {(isAdding || editingId) && (
         <div className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto p-3 sm:items-center sm:p-4">
           <div className="absolute inset-0 bg-black/70 backdrop-blur-md"></div>
-          <div className="relative my-3 flex max-h-[calc(100vh-1.5rem)] w-full max-w-2xl flex-col rounded-2xl bg-white shadow-2xl animate-in zoom-in slide-in-from-bottom-8 duration-300 sm:my-0 sm:max-h-[calc(100vh-2rem)]">
+          <div className="relative my-3 flex h-[calc(100vh-1.5rem)] w-full max-w-6xl flex-col rounded-2xl bg-white shadow-2xl animate-in zoom-in slide-in-from-bottom-8 duration-300 sm:my-0 sm:h-[calc(100vh-2rem)]">
             <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl">
               <div className="shrink-0 bg-blue-900 p-4 text-white flex justify-between items-center sm:p-6">
                 <h3 className="text-base font-black uppercase tracking-widest sm:text-xl">{editingId ? 'Edit Candidate' : 'Add New Candidate'}</h3>
-                <button type="button" onClick={() => { setIsAdding(false); setEditingId(null); }} className="text-white/60 hover:text-white transition-colors">
+                <button type="button" onClick={() => { clearLocalFilePreviews(); resetFileSelections(); setIsAdding(false); setEditingId(null); }} className="text-white/60 hover:text-white transition-colors">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
               </div>
@@ -1118,7 +1237,9 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 </div>
               </div>
 
-              <div className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-8">
+              <div className="min-h-0 flex-1 overflow-hidden">
+                <div className="grid h-full min-h-0 grid-cols-1 overflow-y-auto lg:grid-cols-[minmax(0,1fr)_340px] lg:overflow-hidden">
+                  <div className="min-h-0 overflow-y-auto p-4 sm:p-8">
                 {activeFormTab === 'personal' && (
                   <div className="grid grid-cols-2 gap-6">
                     <div className="col-span-2">
@@ -1585,16 +1706,6 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                   <div className="h-px bg-gray-100 w-full my-4"></div>
                 </div>
 
-                {/* Photo Upload */}
-                <FileUploadField
-                  label="Photo Candidate"
-                  fileType="photo"
-                  currentValue={formData.photoUrl}
-                  accept="image/*"
-                  inputRef={photoInputRef}
-                  icon={<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>}
-                />
-
                 {/* Passport Upload */}
                 <FileUploadField
                   label="Passport Candidate"
@@ -1617,26 +1728,6 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                   />
                 </div>
 
-                {/* CV PDF Upload */}
-                <FileUploadField
-                  label="CV PDF"
-                  fileType="cv"
-                  currentValue={formData.resumeUrl}
-                  accept=".pdf"
-                  inputRef={resumeInputRef}
-                  icon={<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>}
-                />
-
-                {/* Video Upload */}
-                <FileUploadField
-                  label="Intro Video"
-                  fileType="video"
-                  currentValue={formData.videoUrl}
-                  accept="video/*"
-                  inputRef={videoInputRef}
-                  icon={<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>}
-                />
-
                 {/* Certificate Upload */}
                 <FileUploadField
                   label="Certificate PDF"
@@ -1648,13 +1739,16 @@ const AdminDashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 />
                   </div>
                 )}
+                  </div>
+                  <DocumentPreviewPanel />
+                </div>
               </div>
 
               <div className="shrink-0 bg-gray-50 p-4 flex justify-end space-x-4 sm:p-8">
                 <button
                   type="button"
                   disabled={isSubmitting}
-                  onClick={() => { setIsAdding(false); setEditingId(null); }}
+                  onClick={() => { clearLocalFilePreviews(); resetFileSelections(); setIsAdding(false); setEditingId(null); }}
                   className="px-6 py-2.5 text-xs font-black text-gray-500 uppercase tracking-widest hover:text-gray-800 disabled:opacity-50"
                 >
                   Cancel

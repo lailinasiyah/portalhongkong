@@ -103,7 +103,8 @@ Flight::set('document_types', [
     'cv',
     'certificate',
     'video',
-    'photo'
+    'photo',
+    'passport'
 ]);
 Flight::set('roles', [
     'admin' => [
